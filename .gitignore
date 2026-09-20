@@ -1,0 +1,23 @@
+# Visual Studio and .NET build output
+.vs/
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Local SDK, package and template caches
+.dotnet/
+.templateengine/
+.nuget_packages/
+
+# Document rendering and other temporary output
+_docx_review/
+
+# Generated review and rewrite-plan exports
+review_*.csv
+rewrite_plan_*.csv
+
+# Published installers and packaged output
+publish/
+artifacts/
+*.msi

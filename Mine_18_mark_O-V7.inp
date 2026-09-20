@@ -1,0 +1,2261 @@
+!2026514-V7:三体重复检查,氢气概率检查
+三体O*,O2+H=O+OH口算错误,考虑化学键断键方式重新计算概率
+duplicate反应根据Mine_18机理chemkin取点拟合参数
+!标记反应
+!双氧的单*标记在后OO*，双*记为O*2
+!H2OO*与H2O*O不作区分，统一都标记在后
+!O*不作为新增elements，作为species
+!C相关的先不改写,反应式后系数等先不标*
+!删去注释掉的反应
+ELEMENTS
+O H N C AR HE 
+END
+
+SPECIES
+
+AR      N2      H       H2      HE      FN2    !for the investigation of thermal effect
+O       O*
+OH      O*H
+H2O     H2O*
+HO2     HO*2   HOO*
+H2O2    H2OO*  H2O*2
+O2      OO*    O*2
+OH*     !化学荧光                           
+N       NH     NH2     NH3     NNH     N2H2
+N2H3    N2H4   H2NN    
+NO      NO*
+N2O     N2O*
+NO2     NOO*   NO*2
+HNO     HNO*
+HON     HO*N
+HONO    HONO*  HO*NO  HO*NO*
+H2NO    H2NO*
+HNOH    HNO*H
+HNO2    HNOO*  HNO*2
+!HONO2   HONOO* HONO*O*  HO*NO*2
+NO3     NOOO*  NOO*O*   HNO*3
+HNO3    HNOOO* HNOO*O*  HNO*3
+NH2OH   NH2O*H
+!CO      CO*
+!CO2     COO*   CO*2
+!HCO     HCO*
+!CH4     C2H6    !The two C1-C2 species are only defined as three-body colliders in this model
+END
+
+!--Framework of Present Model---------------------------------------------------------------------------!
+
+!-1 H2/CO mechanism reactions                                                                           !
+!                |-1.1 H2-O2 Chain Reactions                                                            !
+!                |-1.2 H2-O2 Dissociation Reactions                                                     !
+!                |-1.3 HO2                                                                              !
+!				 |-1.4 H2O2                                                                             !
+!				 |-1.5 CO                                                                               !
+!			                                                 
+!-2 Ammonia reactions                                                                                   !
+!                |-2.1 N/N2                                                                             !
+!				 |-2.2 NH                                                                               !
+!				 |-2.3 NH2                                                                              !
+!				 |-2.4 N2H2                                                                             !
+!				 |-2.5 N2H4                                                                             !
+!				 |-2.6 N2H3                                                                             !
+!				 |-2.7 H2NN                                                                             !
+!				 |-2.8 HNOH                                                                             !
+!				 |-2.9 NH3                                                                              !
+!				 |-2.10 NNH                                                                             !
+!				 |-2.11 HNO                                                                             !
+!				 |-2.12 HON                                                                             !
+!				 |-2.13 NO                                                                              !
+!				 |-2.14 NO2                                                                             !
+!				 |-2.15 N2O                                                                             !
+!				 |-2.16 H2NO                                                                            !
+!				 |-2.17 HONO                                                                            !
+!				 |-2.18 HNO2                                                                            !
+!				 |-2.19 HONO2                                                                           ! 
+!				 |-2.20 NO3                                                                             !
+
+REACTIONS
+
+
+!************************1 H2/CO mechanism**************************************
+
+!======================                                                                                                                                                      
+!H2-O2 Chain Reactions                                                                                                                                                       
+!======================                                                                                                                                                      
+                                                                                                                                                                             
+O2+H=O+OH                1.0400E+014    0.00          15286.0    !\AUTHOR: JBZ !\REF: HONG ET AL. PROC. OF THE COMB. INST. 33 (2011) 309 V316 !\COMMENT: 2 PARAMETER FIT
+ OO*+H=O*+OH             0.5200E+014     0.00          15286.0    !k=0.5*koriginal+
+ 	REV	/ 6.802E+11 0.290 -1302.4/                   		     !k=koriginal reverse-need
+ OO*+H=O+O*H             0.5200E+014     0.00          15286.0
+ 	REV	/ 6.802E+11 0.290 -1302.4/
+ O*2+H=O*+O*H            1.0400E+014    0.00          15286.0 
+ 
+! Varga et al. Int. J. Chem. Kinet. (2016)
+O+H2=H+OH                1.2554E+006    2.27039       6956.9
+ O*+H2=H+O*H             1.2554E+006    2.27039       6956.9                                                                                                                                                                            
+! Michael and Sutherland, J. Phys. Chem. 92:3853 (1988)                                                                                                                      
+H2+OH = H2O+H			 0.216E+09  1.51  0.343E+04                                                                                                                           
+ H2+O*H = H2O*+H		 0.216E+09  1.51  0.343E+04  
+ 
+!2OH=O+H2O  					8.4999E+004			 2.26419		-1784.8 		! Shi
+! 2O*H=O*+H2O*  				8.4999E+004			 2.26419		-1784.8
+! OH+O*H=O*+H2O  			4.250E+004			 2.26419		-1784.8
+!  REV/8.533E+05	 2.26 	14423.8 / 
+! OH+O*H=O+H2O*  			4.25E+004			 2.26419		-1784.8
+!  REV/8.533E+05	 2.26 	14423.8 / 
+!! M. Sangwan, L. N. Krasnoperov, The Journal of Physical Chemistry A 116 (2012) 11817?1822.                                                                                  
+!based on chemkin(Mine_18)取点拟合逆反应速率常数REV	/ 2.382E+08 1.62 14484.4/;其一duplicate的k_r_original：/1.19E+08 1.62 14484.4/
+OH+OH = O+H2O						1.35E+07   1.689  -1166.8                                                                                                                            
+    DUPLICATE   	
+OH+OH = O+H2O					    -2.697E+10   0.567  0.0                                                                                                                         
+    DUPLICATE                                                                                                                                                                
+!one* P+ = 1,P- = 1
+O*H+OH => O*+H2O				    1.35E+07   1.689  -1166.8                                                                                                              
+    DUPLICATE   	
+O*H+OH => O*+H2O					-2.697E+10   0.567  0.0                                                                                                                          
+    DUPLICATE 
+O*+H2O => O*H+OH		            2.382E+08  1.616  14484.4
+
+!O*H+OH = O+H2O*						6.75E+06   1.689  -1166.8   
+!    REV/1.19E+08 1.62 14484.4/                                                                                                                  
+!    DUPLICATE   	
+!O*H+OH = O+H2O*					    -1.35E+10   0.567  0.0                                                                                                                         
+!    REV/1.19E+08 1.62 14484.4/  
+!	DUPLICATE 
+O*H+OH => O+H2O*				    1.35E+07   1.689  -1166.8                                                                                                              
+    DUPLICATE   	                
+O*H+OH => O+H2O*					-2.697E+10   0.567  0.0                                                                                                                         
+    DUPLICATE 
+O+H2O* => O*H+OH		            2.382E+08  1.616  14484.4
+
+!TWO* P+ = 1,P- = 1
+!O*H+O*H = O*+H2O*						1.35E+07   1.689  -1166.8   
+!    REV/1.19E+08 1.62 14484.4/                                                                                                                  
+!    DUPLICATE   	
+!O*H+O*H = O*+H2O*					    -2.697E+10   0.567  0.0                                                                                                                         
+!    REV/1.19E+08 1.62 14484.4/  
+!	DUPLICATE 	
+O*H+O*H => O*+H2O*				    1.35E+07   1.689  -1166.8                                                                                                            
+    DUPLICATE   	                
+O*H+O*H => O*+H2O*					-2.697E+10   0.567  0.0                                                                                                                       
+    DUPLICATE 
+O*+H2O* => O*H+O*H		            2.382E+08  1.616  14484.4	
+!============================                                                                                                                                                
+!H2-O2 Dissociation Reactions                                                                                                                                                
+!============================                                                                                                                                                
+                                                                                                                                                                             
+! Tsang and Hampson, J. Phys. Chem. Ref. Data, 15:1087 (1986)                                                                                                                
+H2+M = H+H+M						4.577E+19 -1.40  1.0438E+05                                                                                                                          
+   H2/2.5/ H2O/12/ H2O*/12/                                                                                                                                                          
+   !CO/1.9/ CO2/3.8/                                                                                                                                                          
+   AR/0.0/ HE/0.0/                                                                                                                                                           
+                                                                                                                                                                            
+! Tsang and Hampson, J. Phys. Chem. Ref. Data, 15:1087 (1986)                                                                                                                
+H2+AR = H+H+AR                      5.840E+18 -1.10  1.0438E+05                                                                                                    
+H2+HE = H+H+HE                      5.840E+18 -1.10  1.0438E+05                                                                                                    
+                                                                                                                                                                             
+! Tsang and Hampson, J. Phys. Chem. Ref. Data, 15:1087 (1986)                                                                                                                
+O+O+M = O2+M                        6.165E+15 -0.50  0.000E+00                                                                                                     
+   H2/2.5/ H2O/12/ H2O*/12/                                                                                                                                                           
+   AR/0.0/ HE/0.0/                                                                                                                                                           
+  !CO/1.9/ CO2/3.8/                                                                                                                                                          
+ O+O*+M = OO*+M                     1.233E+16 -0.50  0.000E+00         !=2kf
+   REV/2.145E+17 -0.555 118676.8 /!=kr 
+   H2/2.5/ H2O/12/ H2O*/12/                                                                                                                                                          
+   AR/0.0/ HE/0.0/                                                                                                                                                           
+   !CO/1.9/ CO2/3.8/
+ O*+O*+M = O*2+M                    6.165E+15 -0.50  0.000E+00                                                                                                     
+   H2/2.5/ H2O/12/ H2O*/12/                                                                                                                                                          
+   AR/0.0/ HE/0.0/                                                                                                                                                           
+   !CO/1.9/ CO2/3.8/
+                                                                                                                                                                             
+! Tsang and Hampson, J. Phys. Chem. Ref. Data, 15:1087 (1986)                                                                                                                
+O+O+AR = O2+AR                              	1.886E+13  0.00 -1.788E+03  
+ O+O*+AR = OO*+AR                              	3.772E+13  0.00 -1.788E+03 !=2kf
+    REV/6.563E+14 -0.055 116888.8 /!=kr 
+ O*+O*+AR = O*2+AR                              1.886E+13  0.00 -1.788E+03
+                                                                                                   
+O+O+HE = O2+HE                              	1.886E+13  0.00 -1.788E+03                                                                                                     
+ O+O*+HE = OO*+HE                              	3.772E+13  0.00 -1.788E+03  !=2kf
+    REV/6.563E+14 -0.055 116888.8 /!=kr 
+ O*+O*+HE = O*2+HE                              1.886E+13  0.00 -1.788E+03
+ 
+! Tsang and Hampson, J. Phys. Chem. Ref. Data, 15:1087 (1986)                                                                                                                
+O+H+M = OH+M                                	4.714E+18 -1.00  0.000E+00                                                                                                     
+   H2/2.5/  H2O/12/ H2O*/12/                                                                                                                                                         
+   AR/0.75/ HE/0.75/                                                                                                                                                         
+   !CO/1.9/  CO2/3.8/                                                                                                                                                         
+ O*+H+M = O*H+M                                	4.714E+18 -1.00  0.000E+00                                                                                                     
+   H2/2.5/  H2O/12/ H2O*/12/                                                                                                                                                        
+   AR/0.75/ HE/0.75/                                                                                                                                                         
+   !CO/1.9/  CO2/3.8/                                                                                                                                                                              
+! Srinivasan and Michael, Int. J. Chem. Kinetic. 38 (2006)                                                                                                                   
+! Rate constant is for Ar with efficiencies from Michael et al., J. Phys. Chem. A, 106 (2002)                                                                                
+H2O+M = H+OH+M                              	6.064E+27 -3.322 1.2079E+05                                                                                                    
+   H2/3.0/  H2O/0.0/  H2O*/0.0/                     
+   HE/1.10/ N2/2.00/    FN2/2.00/                    
+   O2/1.5/  O*2/1.5/ OO*/1.5/                                                                                                                                                                
+! Efficiencies for CO and CO2 taken from Li et al., Int. J. Chem. Kinet. 36:566-575 (2004)                                                                                   
+   !CO/1.9/ CO2/3.8/                                                                                                                                                          
+ H2O*+M = H+O*H+M                              	6.064E+27 -3.322 1.2079E+05                                                                                                    
+   H2/3.0/  H2O/0.0/   H2O*/0.0/                     
+   HE/1.10/ N2/2.00/    FN2/2.00/                    
+   O2/1.5/  O*2/1.5/ OO*/1.5/                                                                                                                                                                 
+! Efficiencies for CO and CO2 taken from Li et al., Int. J. Chem. Kinet. 36:566-575 (2004)                                                                                   
+   !CO/1.9/ CO2/3.8/  
+   
+! Srinivasan and Michael, Int. J. Chem. Kinetic. 38 (2006)                                                                                                                   
+H2O+H2O = H+OH+H2O                          	1.006E+26 -2.44  1.2018E+05                                                                                                    
+    
+H2O*+H2O = H+O*H+H2O                          	1.006E+26 -2.44  1.2018E+05       
+!    REV/ 5.419E+25 -2.69559148686938 1989.9/
+H2O*+H2O = H+OH+H2O*                          	1.006E+26 -2.44  1.2018E+05     
+!    REV/ 5.419E+25 -2.69559148686938 1989.9 /     
+H2O*+H2O* = H+O*H+H2O*                         	1.006E+26 -2.44  1.2018E+05     
+                                                                                                                                                                             
+!=================================                                                                                                                                           
+! 1.3 Formation and consumption of HO2                                                                                                                                           
+!=================================                                                                                                                                           
+                                                                                                                                                                                                                                                                                            
+!Updated by JBZ
+H+O2(+M)<=>HO2(+M)                                           +4.6500000E+012 +4.4000000E-001 +0.0000000E+000   !\AUTHOR: AK !\REF:FERNANDES PCCP 2008 !COMMENT: Efficiencis of AR and HE derived from seperated reactions,
+LOW /                                                        +1.7370000E+019 -1.2300000E+000 +0.0000000E+000 / !LOW-PRESSURE-LIMIT
+TROE /                                       +6.7000000E-001 +1.0000000E-030 +1.0000000E+030 +1.0000000E+030 / !TROE PARAMETERS
+ H2 / 1.300 / 
+ !CO / 1.900 / 
+ !CO2 / 3.800 / 
+ HE / 0.640 / H2O / 10.000 / AR / 0.500 / H2O* / 10.000 /
+ !CH4 / 2.000 / C2H6 / 3.000 / !3RD BODY COLLIDER EFFICIENCIES
+  
+  H+O*2(+M)<=>HO*2(+M)                                       +4.6500000E+012 +4.4000000E-001 +0.0000000E+000   !\AUTHOR: AK !\REF:FERNANDES PCCP 2008 !COMMENT: Efficiencis of AR and HE derived from seperated reactions,
+LOW /                                                        +1.7370000E+019 -1.2300000E+000 +0.0000000E+000 / !LOW-PRESSURE-LIMIT
+TROE /                                       +6.7000000E-001 +1.0000000E-030 +1.0000000E+030 +1.0000000E+030 / !TROE PARAMETERS
+ H2 / 1.300 / 
+ !CO / 1.900 / CO2 / 3.800 / 
+ HE / 0.640 / H2O / 10.000 / AR / 0.500 / H2O* / 10.000 /
+ !CH4 / 2.000 / C2H6 / 3.000 / !3RD BODY COLLIDER EFFICIENCIES
+  
+ H+OO*(+M)<=>HOO*(+M)                                        +4.6500000E+012 +4.4000000E-001 +0.0000000E+000   !\AUTHOR: AK !\REF:FERNANDES PCCP 2008 !COMMENT: Efficiencis of AR and HE derived from seperated reactions,
+LOW /                                                        +1.7370000E+019 -1.2300000E+000 +0.0000000E+000 / !LOW-PRESSURE-LIMIT
+TROE /                                       +6.7000000E-001 +1.0000000E-030 +1.0000000E+030 +1.0000000E+030 / !TROE PARAMETERS
+ H2 / 1.300 / 
+ !CO / 1.900 / CO2 / 3.800 / 
+ HE / 0.640 / H2O / 10.000 / AR / 0.500 / H2O* / 10.000 /
+ !CH4 / 2.000 / C2H6 / 3.000 / !3RD BODY COLLIDER EFFICIENCIES
+
+!Michael et al., Proc. Comb. Inst. 28:1471 (2000)                                                                                                                           
+HO2+H = H2+O2                                 	3.659E+06  2.09 -1.451E+03                                                                                                 
+ HO*2+H = H2+O*2                                3.659E+06  2.09 -1.451E+03 
+ HOO*+H = H2+OO*                                3.659E+06  2.09 -1.451E+03  
+ 
+! Fernandez-Ramos and Varandas, J. Phys. Chem. A 106:4077-4083 (2002)                                                                                                        
+!HO2+O = O2+OH                               	4.750E+10  1.00 -7.2393E+02                                                                                                    
+!Scaled by 0.60                                                                                                                                                              
+HO2+O = O2+OH                               	2.850E+10  1.00 -7.2393E+02                                                                                                   
+   
+ HOO*+O = OO* +OH                               1.425E+10  1.00 -7.2393E+02    !P+ 0.5,P- 0.5!
+ HOO*+O = O2 +O*H                               1.425E+10  1.00 -7.2393E+02    !P+ 0.5,P- 1!NEED
+    REV/2.83E+09 1.33 52502.04 /
+
+ HO2+O* = OO* +OH                               2.850E+10   1.00 -7.2393E+02    !P+ 1,P- 0.5!NEED
+    REV/1.42E+09 1.33 52502.04 / 
+ !HO2+O* = O2 +O*H                              1.425E+10  1.00 -7.2393E+02    !HO2断O-O键，不存在此反应
+ 
+ HO*2+O = OO*+O*H                               2.850E+10  1.00 -7.2393E+02    !P+ 1,P- 0.5!NEED
+    REV/1.42E+09 1.33 52502.04 /
+ !HO*2+O = O*2+OH                               1.425E+10  1.00 -7.2393E+02   !HO2断O-O键，不存在此反应
+ 
+ HOO*+O* = OO* +O*H                             1.425E+10  1.00 -7.2393E+02     !P+ 0.5,P- 0.5!
+ HOO*+O* = O*2+OH                               1.425E+10  1.00 -7.2393E+02    !P+ 0.5,P- 1!NEED
+    REV/2.83E+09 1.33 52502.04 /
+	
+ HO*2+O* = O*2+O*H                              2.850E+10  1.00 -7.2393E+02 
+   
+! M. P. Burke, S. J. Klippenstein, L. B. Harding, Proceedings of the Combustion Institute 34 (2013) 547?55.                                                                  
+HO2+OH = H2O+O2 				                1.93E20    -2.49  5.84E+02                                                                                                                           
+    DUPLICATE                                                                                                                                                                
+HO2+OH = H2O+O2 			                    1.21E+09   1.24   -1.31E+03                                                                                                                     
+    DUPLICATE                                                                                                                                                                
+                                                                                                                    	
+ !HOO*+OH = H2O*+O2 				            1.93E20    -2.49  5.84E+02                                                                                                                              
+ !   DUPLICATE
+ !HOO*+OH = H2O*+O2 			                1.21E+09   1.24   -1.31E+03                                                                                                               
+ !   DUPLICATE
+	
+ HOO*+OH = H2O+OO* 				                1.93E20    -2.49  5.84E+02                                                                                                                         
+    DUPLICATE
+ HOO*+OH = H2O+OO* 			                    1.21E+09   1.24   -1.31E+03                                                                                                                   
+    DUPLICATE
+	
+ HO2+O*H = H2O*+O2 				                1.93E20    -2.49  5.84E+02                                                                                                                           
+    DUPLICATE
+ HO2+O*H = H2O*+O2 			                    1.21E+09   1.24   -1.31E+03                                                                                                                    
+    DUPLICATE
+	
+ !HO2+O*H = H2O+OO* 				             0.965E20    -2.49  5.84E+02                                                                                                                          
+ !   DUPLICATE
+ !HO2+O*H = H2O+OO* 			                 0.605E+09   1.24   -1.31E+03                                                                                                                    
+ !   DUPLICATE
+	
+ HOO*+O*H = H2O*+OO* 				           1.93E20    -2.49  5.84E+02                                                                                                                           
+    DUPLICATE
+ HOO*+O*H = H2O*+OO* 			               1.21E+09   1.24   -1.31E+03                                                                                                                      
+    DUPLICATE
+	
+ !HOO*+O*H = H2O+O*2 				            0.965E20    -2.49  5.84E+02                                                                                                                        
+ !   DUPLICATE
+ !HOO*+O*H = H2O+O*2 			                0.605E+09   1.24   -1.31E+03                                                                                                                   
+ !   DUPLICATE
+	
+ !HO*2+OH = H2O*+OO* 				            0.965E20    -2.49  5.84E+02                                                                                                                           
+ !   DUPLICATE
+ !HO*2+OH = H2O*+OO* 			                0.605E+09   1.24   -1.31E+03                                                                                                                    
+ !   DUPLICATE
+	
+ HO*2+OH = H2O+O*2 				               1.93E20    -2.49  5.84E+02                                                                                                                          
+    DUPLICATE
+ HO*2+OH = H2O+O*2 			                   1.21E+09   1.24   -1.31E+03                                                                                                                     
+    DUPLICATE
+	
+ HO*2+O*H = H2O*+O*2 				            1.93E20    -2.49  5.84E+02                                                                                                                           
+    DUPLICATE
+ HO*2+O*H = H2O*+O*2 			                1.21E+09   1.24   -1.31E+03                                                                                                                     
+    DUPLICATE  
+	
+!M. Burke, S. Klippenstein, Nature Chemistry, 9, 1078 C1082 (2017)
+H+O2+H = H2+O2                                  8.80E+22   -1.835  800
+ H+OO*+H = H2+OO*                               8.80E+22   -1.835  800
+ H+O*2+H = H2+O*2                               8.80E+22   -1.835  800
+ 
+H+O2+H = OH+OH                                  4.00E+22   -1.835  800
+ H+OO*+H = O*H+OH                               4.00E+22   -1.835  800
+    REV/3.972E+19 -1.167 86142.1/!=2kr 
+ H+O*2+H = O*H+O*H                              4.00E+22   -1.835  800
+ 
+H+O2+O = OH+O2                                  7.35E+22   -1.835  800
+ !H+OO*+O = O*H+O2                               3.675E+22  -1.835  800   
+ H+OO*+O = OH+OO*                               7.35E+22  -1.835  800
+ H+O2+O* = O*H+O2                               7.35E+22  -1.835  800
+ !H+O2+O* = OH+OO*                               3.675E+22  -1.835  800
+ H+OO*+O* = O*H+OO*                             7.35E+22  -1.835  800
+ !H+OO*+O* = OH+O*2                              3.675E+22  -1.835  800
+ !H+O*2+O = O*H+OO*                              3.675E+22  -1.835  800
+ H+O*2+O = OH+O*2                               7.35E+22  -1.835  800
+ H+O*2+O* = O*H+O*2                             7.35E+22   -1.835  800
+
+H+O2+OH = H2O+O2                                2.56E+22   -1.835  800
+ !H+OO*+OH = H2O*+O2                             1.28E+22   -1.835  800   !k*+ =0.5*koriginal+ !k*- =0.5*koriginal reverse  -no need 
+ H+OO*+OH = H2O+OO*                             2.56E+22   -1.835  800
+ H+O2+O*H = H2O*+O2                             2.56E+22   -1.835  800
+ !H+O2+O*H = H2O+OO*                             1.28E+22   -1.835  800
+ H+OO*+O*H = H2O*+OO*                           2.56E+22   -1.835  800
+ !H+OO*+O*H = H2O+O*2                            1.28E+22   -1.835  800
+ !H+O*2+OH = H2O*+OO*                            1.28E+22   -1.835  800
+ H+O*2+OH = H2O+O*2                             2.56E+22   -1.835  800
+ H+O*2+O*H = H2O*+O*2                           2.56E+22   -1.835  800
+ 			   
+!=====================================                                                                                                                                       
+!1.4 Formation and Consumption of H2O2                                                                                                                                           
+!=====================================                                                                                                                                       
+!based on chemkin(Mine_18)取点拟合逆反应速率常数REV	/ 1.943E+18 -1.72 38651.2/;其一duplicate的k_r_original：/ 9.716E+17 -1.72 38651.2/
+! D. D. Y. Zhou, K. Han, P. Zhang, L. B. Harding, M. J. Davis, R. T. Skodje, The Journal of Physical Chemistry A 116 (2012) 2089?100.                                        
+HO2+HO2 = H2O2+O2                           	1.179E+9   0.7712  -1825                                                                                                       
+   DUPLICATE                                                                                                                                                                 
+HO2+HO2 = H2O2+O2        			            1.251E+12  0.295   7397                   	                                                                                                   
+   DUPLICATE                                                                                                                                                                                                                                                                                                                              
+!CHEMREV分别求的
+!REV/1.951E+10 0.68 36433.9/ !
+!REV/2.07E+13 0.21 45655.9/ !
+!one*                                                                     !k*+ =0.5*koriginal+ !k*- =koriginal reverse  - need
+HOO*+HO2 = H2OO*+O2                            1.179E+9   0.7712  -1825                                                                                                       
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE
+HOO*+HO2 = H2OO*+O2                            1.251E+12  0.295   7397                                                                                                         
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE 
+    
+HOO*+HO2 = H2O2+OO*                            1.179E+9   0.7712  -1825
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE
+HOO*+HO2 = H2O2+OO*                             1.251E+12  0.295   7397 
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE
+   
+!two*                                                                !!!k*+ =1/3*koriginal+ !k*- =0.5koriginal reverse  -need
+!HO*2+HO2 = H2O*2+O2                            0.393E+9   0.7712  -1825                                                                                                       
+!	REV/4.858E+17 -1.72 38651.2/
+!	DUPLICATE
+!HO*2+HO2 = H2O*2+O2                            0.417E+12  0.295   7397                                                                                                        
+!	REV/4.858E+17 -1.72 38651.2/
+!   DUPLICATE
+!   
+!HO*2+HO2 = H2O2+O*2                           	0.393E+9   0.7712  -1825        
+!    REV/4.858E+17 -1.72 38651.2/
+!   DUPLICATE
+!HO*2+HO2 = H2O2+O*2                           	0.417E+12  0.295   7397        
+!    REV/4.858E+17 -1.72 38651.2/
+!   DUPLICATE
+ 
+HO*2+HO2 = H2OO*+OO*                            1.179E+9   0.7712  -1825       
+!   REV/9.755E+9 0.68 36433.9/
+   DUPLICATE
+HO*2+HO2 = H2OO*+OO*                            1.251E+12  0.295   7397 
+!   REV/1.035E+13 0.21 45655.9/
+   DUPLICATE
+
+HOO*+HOO* = H2O*2+O2                          1.179E+9   0.7712  -1825                                                                                                     
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE 
+HOO*+HOO* = H2O*2+O2                          1.251E+12  0.295   7397                                                                                                     
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE
+   
+HOO*+HOO* = H2O2+O*2                          1.179E+9   0.7712  -1825          
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE 
+HOO*+HOO* = H2O2+O*2                          1.251E+12  0.295   7397        
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE 
+   
+HOO*+HOO* = H2OO*+OO*                         1.179E+9   0.7712  -1825          
+!   REV/9.755E+9 0.68 36433.9/
+   DUPLICATE
+HOO*+HOO* = H2OO*+OO*                         1.251E+12  0.295   7397        
+!   REV/1.035E+13 0.21 45655.9/
+   DUPLICATE 
+ 
+!three*                                                                     
+HOO*+HO*2 = H2O*2+OO*                          1.179E+9   0.7712  -1825                                                                                     
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE
+HOO*+HO*2 = H2O*2+OO*                          1.251E+12  0.295   7397                                                                           
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE
+   
+HOO*+HO*2 = H2OO*+O*2                          1.179E+9   0.7712  -1825                                                                                                                
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE
+HOO*+HO*2 = H2OO*+O*2                          1.251E+12  0.295   7397                                                                                                     
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE
+   
+!four*                                                                           !k*+ =koriginal+ !k*- =koriginal reverse  -no need
+HO*2+HO*2 = H2O*2+O*2                          1.179E+9   0.7712  -1825                                                                                                       
+!   REV/1.951E+10 0.68 36433.9/
+   DUPLICATE 
+HO*2+HO*2 = H2O*2+O*2                          1.251E+12  0.295   7397                                                                                                        
+!   REV/2.07E+13 0.21 45655.9/
+   DUPLICATE 
+
+  
+! Troe, Combust. Flame,  158:594-601 (2011)                                                                                                                                  
+! Rate constant is for Ar                                                                                                                                                    
+H2O2(+M) = OH+OH(+M)            			2.00E+12   0.90  4.8749E+04                                                                                                            
+   LOW/2.49E+24 -2.30 4.8749E+04/                                                                                                                                            
+   TROE/0.43 1E-30 1E+30/                                                                                                                                                    
+   H2O/7.5/ 
+   !CO2/1.6/                                                                                                                                                         
+   N2/1.5/  O2/1.2/       FN2/1.5/                                                                                                                                                   
+   HE/0.65/ H2O2/7.7/                                                                                                                                                        
+! Efficiencies for H2 and CO taken from Li et al., Int. J. Chem. Kinet. 36:566-575 (2004)                                                                                    
+   H2/3.7/ 
+   !CO/2.8/                                                                                                                                                           
+
+ H2O*2(+M) = O*H+O*H(+M)            		2.00E+12   0.90  4.8749E+04                                                                                                            
+   LOW/2.49E+24 -2.30 4.8749E+04/                                                                                                                                            
+   TROE/0.43 1E-30 1E+30/                                                                                                                                                    
+   H2O/7.5/                                                                                                                                                         
+   N2/1.5/ O*2/1.2/       FN2/1.5/                                                                                                                                                   
+   HE/0.65/ H2O*2/7.7/                                                                                                                                                        
+! Efficiencies for H2 and CO taken from Li et al., Int. J. Chem. Kinet. 36:566-575 (2004)                                                                                    
+   H2/3.7/ 
+ H2OO*(+M) = O*H+OH(+M)            		    2.00E+12   0.90  4.8749E+04                                                                                                
+  REV/5.720E+07 1.73 -1832.6 /  !k*=2*kr（两倍）
+  LOW/2.49E+24 -2.30 4.8749E+04/ 
+   TROE/0.43 1E-30 1E+30/ 
+   H2O/7.5/                                                                                                                                                         
+   N2/1.5/ O*2/1.2/       FN2/1.5/                                                                                                                                                   
+   HE/0.65/ H2O*2/7.7/                                                                                                                                                        
+! Efficiencies for H2 and CO taken from Li et al., Int. J. Chem. Kinet. 36:566-575 (2004)                                                                                    
+   H2/3.7/ 
+                                                                                                                                                                             
+! Tsang and Hampson, J. Phys. Chem. Ref. Data, 15:1087 (1986)                                                                                                                
+H2O2+H = H2O+OH                             	2.410E+13  0.00  3.970E+03 
+ H2OO*+H = H2O*+OH                             	2.410E+13  0.00  3.970E+03 
+! 	REV	/ 1.339E+09 1.02051799236574 71918.5/
+ H2OO*+H = H2O+O*H                             	2.410E+13  0.00  3.970E+03
+! 	REV	/ 1.339E+09 1.02051799236574 71918.5/ 
+ H2O*2+H = H2O*+O*H                             2.410E+13  0.00  3.970E+03 
+                                                                                                    
+H2O2+H = HO2+H2                             	4.820E+13  0.00  7.950E+03 
+ H2O*2+H = HO*2+H2                             	4.820E+13  0.00  7.950E+03 
+ H2OO*+H = HOO*+H2                             	4.820E+13  0.00  7.950E+03
+                                                                                                    
+H2O2+O = OH+HO2                             	9.550E+06  2.00  3.970E+03 
+ !one*
+ !H2OO*+O = O*H+HO2                             9.550E+06  2.00  3.970E+03   
+ H2OO*+O = OH+HOO*                             	9.550E+06  2.00  3.970E+03    
+ H2O2+O* = O*H+HO2                              9.550E+06  2.00  3.970E+03   
+ !H2O2+O* = OH+HOO*                             9.550E+06  2.00  3.970E+03
+  !two*  
+ !H2OO*+O* = OH+HO*2                            9.550E+06  2.00  3.970E+03   
+ H2OO*+O* = O*H+HOO*                            9.550E+06  2.00  3.970E+03   
+ 
+ H2O*2+O = OH+HO*2                              9.550E+06  2.00  3.970E+03   
+ !H2O*2+O = O*H+HOO*                            9.550E+06  2.00  3.970E+03
+  !three*
+ H2O*2+O* = O*H+HO*2                            9.550E+06  2.00  3.970E+03                                                                                                     
+                                                                                                                                                                             
+! Hong et al., J. Phys. Chem. A  114 (2010) 5718?727                                                                                                                         
+H2O2+OH = HO2+H2O                           	1.740E+12  0.00  3.180E+02                                                                                                     
+   DUPLICATE                                                                                                                                                                 
+H2O2+OH = HO2+H2O                           	7.590E+13  0.00  7.270E+03                                                                                                     
+   DUPLICATE                                                                                                                                                                 
+
+!one *
+ !H2OO*+OH = H2O*+HO2                           1.740E+12  0.00  3.180E+02
+ ! DUPLICATE                                                             
+ !H2OO*+OH = H2O*+HO2                           7.590E+13  0.00  7.270E+03
+ ! DUPLICATE                                   
+										      
+ H2OO*+OH = H2O+HOO*                            1.740E+12  0.00  3.180E+02
+  DUPLICATE                                                             
+ H2OO*+OH = H2O+HOO*                            7.590E+13  0.00  7.270E+03
+  DUPLICATE                                   
+										      
+ H2O2+O*H  = H2O*+HO2                           1.740E+12  0.00  3.180E+02
+  DUPLICATE                                                             
+ H2O2+O*H  = H2O*+HO2                           7.590E+13  0.00  7.270E+03
+  DUPLICATE                                   
+										      
+ !H2O2+O*H  = H2O+HOO*                          1.740E+12  0.00  3.180E+02
+ ! DUPLICATE                                                             
+ !H2O2+O*H  = H2O+HOO*                          7.590E+13  0.00  7.270E+03
+ ! DUPLICATE                                   
+										      
+!two*                                        
+ H2OO*+O*H = H2O*+HOO*                          1.740E+12  0.00  3.180E+02
+  DUPLICATE                                                             
+ H2OO*+O*H = H2O*+HOO*                          7.590E+13  0.00  7.270E+03
+  DUPLICATE                                   
+										      
+ !H2OO*+O*H = H2O +HO*2                         1.740E+12  0.00  3.180E+02
+ ! DUPLICATE                                                             
+ !H2OO*+O*H = H2O +HO*2                         7.590E+13  0.00  7.270E+03
+ ! DUPLICATE                                   
+										      
+ !H2O*2+OH = H2O*+HOO*                          1.740E+12  0.00  3.180E+02
+ ! DUPLICATE                                                             
+ !H2O*2+OH = H2O*+HOO*                          7.590E+13  0.00  7.270E+03
+ ! DUPLICATE                                   
+										      
+ H2O*2+OH = H2O +HO*2                           1.740E+12  0.00  3.180E+02
+  DUPLICATE                                                             
+ H2O*2+OH = H2O +HO*2                           7.590E+13  0.00  7.270E+03 
+  DUPLICATE                                   
+										      
+!three*                                      
+ H2O*2+O*H = HO*2+H2O*                          1.740E+12  0.00  3.180E+02 
+  DUPLICATE                                                                                                        
+ H2O*2+O*H = HO*2+H2O*                          7.590E+13  0.00  7.270E+03                                                                                                         
+  DUPLICATE
+
+!=====================================                                                                                                                                       
+!1.5 CO REACTIONS (Varga 2016)                                                                                                                                           
+!=====================================                                      
+!CO+O(+M)=CO2(+M)             1.362E+10      0.000    2384.0
+!LOW                  /         1.173E+24      -2.79    4191.0     /
+!H2/2.0/ H2O/12/ CO/1.75/ CO2/3.6/ AR/0.7/ HE/0.7/
+!CO+O2=CO2+O                  2.8865E+012     0.0000      47697
+!CO+OH=CO2+H                  1.6596E+004    2.22171     -1380.4
+!CO+HO2=CO2+OH                1.5144E+007    1.67957      18159
+!HCO(+M)=H+CO(+M)             4.930E+16      -0.93        19725
+!LOW                  /       4.9426E+010    0.95965      14640     /
+!TROE                 /        8.5200E-01  5.1400E+01 3.5700E+03 3.4200E+03 /
+!H2/2/ O2/1/ AR/0.55/ HE/0.786/ H2O/12/ CO/1.5/ CO2/2/
+!!Added O2, AR and HE as a potential thirdbody
+!HCO+O2=CO+HO2                7.580E+12      0.000      410.00
+!HCO+H=CO+H2                  6.413E+13      0.000   0.000E+00
+!HCO+O=CO+OH                  3.020E+13      0.000   0.000E+00
+!HCO+O=CO2+H                  3.000E+13      0.000   0.000E+00
+!HCO+OH=CO+H2O                1.020E+14      0.000   0.000E+00
+!HCO+HO2=CO2+H+OH             3.000E+13      0.000   0.000E+00
+!2HCO=H2+2CO                  3.000E+12      0.000   0.000E+00
+
+
+!!***********************************2 THE REACTIONS OF NH3***********************************
+!-----------------------2.1 N/N2 REACTIONS-----------------------------------------
+!------------------------------------------------------------------------------
+N2+M=N+N+M                                      1.890E+18   -0.85   2.250E+05 ! Lamoureux 2016
+H2O/16.25/ 
+!CO/1.875/ CO2/3.75/ CH4/16.25/ C2H6/16.25/                         !
+
+N+O+M=NO+M                                      7.600E+14   -0.10  -1.770E+03 ! Lamoureux 2016
+H2O/16.25/ 
+!CO/1.875/ CO2/3.75/ CH4/16.25/ C2H6/16.25/                         !
+ N+O*+M=NO*+M                                   7.600E+14   -0.10  -1.770E+03 ! Lamoureux 2016
+ H2O/16.25/ 
+ !CO/1.875/ CO2/3.75/ CH4/16.25/ C2H6/16.25/                        !
+
+N+NO2=N2O+O                                     1.800E+12   0.00    0.000E+00 ! Lamoureux 2016 !!!Ea=0
+ N+NOO*=N2O*+O                                  0.900E+12   0.00    0.000E+00 
+  REV /5.472E+13	-0.29 	41950.2/                                                                     ! P*- = P original-
+ N+NOO*=N2O+O*                                  0.900E+12   0.00    0.000E+00
+  REV /5.472E+13	-0.29 	41950.2/                                                                     ! P*- = P original- 
+ N+NO*2=N2O*+O*                                 1.800E+12   0.00    0.000E+00 
+ 
+N+O2=NO+O                                       5.841E+09   1.01    6.202E+03 ! Baulch 2005 A/6.400E+09 error (+/-0.2-0.5) 280-1500 K also used by Lamoureux 2016/Vandooren 1994 
+!updated by JBZ
+ N+OO*=NO*+O                                    2.9205E+09  1.01    6.202E+03
+  REV /5.339E+08	1.11 	37883.1/                                                                     ! P*- = P original-
+ N+OO*=NO+O*                                    2.9205E+09  1.01    6.202E+03
+  REV /5.339E+08	1.11 	37883.1/                                                                     ! P*- = P original-
+ N+O*2=NO*+O*                                   5.841E+09   1.01    6.202E+03
+  
+N+OH = NO+H                                     3.360E+13    0      385 ! GRI3.0 used by Okafor 2019
+ N+O*H = NO*+H                                  3.360E+13    0      385
+ 
+N+NO = N2+O                                     1.128E+13    0.14   0.0       !\AUTHOR: YJZ !\REF:Abian, Alzueta and Glarborg, IJCK, 2015, 47(8): 518-532 !\COMMENT: 1.2A_9.4E12
+ N+NO* = N2+O*                                  1.128E+13    0.14   0.0
+
+NO+H(+M)=HNO(+M)                                4.48E+19     -1.32  740 ! GRI3.0
+ LOW /2.4E14 0.206 -1550/                                   ! 
+ TROE /0.82 1E-30 1E30 1E30/                                ! 
+ N2/1.6/                                                    ! 
+!NO+H(+M)=HNO(+M)                    4.48E+19  -1.32       740 ! GRI3.0
+!LOW /2.4E14 0.206 -1550/                                   ! 
+! TROE /0.82 1E-30 1E30 1E30/                                ! 
+! N2/1.6/  
+ NO*+H(+M)=HNO*(+M)                            4.48E+19      -1.32  740 ! GRI3.0
+ LOW /2.4E14 0.206 -1550/                                   ! 
+ TROE /0.82 1E-30 1E30 1E30/                                ! 
+ N2/1.6/  
+ 
+! Tsang W JPCRD 20:221 1991
+! Riley PS Cosic B Fontijn A IJCK 35:374 2003
+! end reactions by JBZ
+
+!------------------------------------------------------------------------------
+!---------------2.2 NH REACTIONS---------------------------------------------------!
+!------------------------------------------------------------------------------
+NH+H=N+H2                                       3.01E13     0.0     0.0       ! Morley 1981/Baulch 2005
+
+NO+H=NH+O                                       9.9E14     -0.1     69900     ! Cohen 1991
+ NO*+H=NH+O*                                    9.9E14     -0.1     69900     
+ 
+NH+O=N+OH                                       3.000E+12   0.00    0.000E+00 ! Duynslaegher 2012 A/7.000E+12)
+ NH+O*=N+O*H                                    3.000E+12   0.00    0.000E+00
+ 
+NH+OH=HNO+H                                     3.2E14     -0.376   -46       ! Klippenstein 2009
+ NH+O*H=HNO*+H                                  3.2E14     -0.376   -46
+
+NH+OH=N+H2O                                     2.000E+09   1.20    5.978E+00 ! Klaus 1997 also used by Duynslaegher 2012 
+ NH+O*H=N+H2O*                                  2.000E+09   1.20    5.978E+00
+
+NH+O2=HNO+O                                     2.4E13      0.000   13850     ! Baulch 2005
+ NH+O*2=HNO*+O*                                 2.4E13      0.000   13850
+ NH+OO*=HNO*+O                                  1.2E13      0.000   13850     !P*- = P original -
+  REV /7.192E+13	-0.05 	13787.1/ 
+ NH+OO*=HNO+O*                                  1.2E13      0.000   13850
+  REV /7.192E+13	-0.05 	13787.1/ 
+  
+NH+O2=NO+OH                                     2.014E16   -1.38    5672      ! Talipov 2009
+ NH+O*2=NO*+O*H                                 2.014E16   -1.38    5672  
+ NH+OO*=NO*+OH                                  1.007E16   -1.38    5672      !P*- = P original -
+  REV /2.898E+15	-1.25 	60789.6/ 
+ NH+OO*=NO+O*H                                  1.007E16   -1.38    5672
+  REV /2.898E+15	-1.25 	60789.6/ 
+ 
+NH+NH=N2+H+H                                    2.500E+13   0.00    0.000E+00 ! Allen 1997 cited Mertens et al.; Int. J. Chem. Kinet. 21:1049 (1989); A/5.100E+13
+NH+N=N2+H                                       9.0E11      0.5     0.0       ! Konnov 2009
+
+NH+NO=N2O+H                              	    5.8E+14      -0.4      0      ! 2*Mei-2019(Glarborg 1998; Combust. Flame 115 (1998) 1 C27
+ NH+NO*=N2O*+H                              	5.8E+14      -0.4      0
+
+NH+NO=N2+OH                                     2.690E+12  -0.072   -5.130E+02! KLIMIC2011 also used by  Lamoureux 2016
+ NH+NO*=N2+O*H                                  2.690E+12  -0.072   -5.130E+02
+ 
+NH+NO2=HNO+NO                                   5.900E+12   0.00    0.000E+00 ! KLIMIC2011
+ NH+NO*2=HNO*+NO*                               5.900E+12   0.00    0.000E+00
+ NH+NOO*=HNO*+NO                                2.950E+12   0.00    0.000E+00 !P*- = P original -
+  REV /6.964E+10	0.49 	45632.9/
+ NH+NOO*=HNO+NO*                                2.950E+12   0.00    0.000E+00
+  REV /6.964E+10	0.49 	45632.9/
+  
+NH+HONO=NH2+NO2                                 1.000E+13   0.00    0.000E+00 ! KLIMIC2011
+ NH+HONO*=NH2+NOO*                              1.000E+13   0.00    0.000E+00 ! KLIMIC2011
+ NH+HO*NO*=NH2+NO*2                             1.000E+13   0.00    0.000E+00 ! KLIMIC2011
+
+NH+N2O=N2+HNO                                   2.000E+12   0.00    6.000E+03 ! Duynslaegher 2012
+ NH+N2O*=N2+HNO*                                2.000E+12   0.00    6.000E+03
+
+!------------------------------------------------------------------------------
+!----------------------2.3 NH2 REACTIONS-------------------------------------------
+!------------------------------------------------------------------------------
+NH2+H=NH+H2                                     2.13E+21   -2.25    8.25E+03  !V. Samu, T. Varga, I. Rahinov, S. Cheskis, T. Turanyi, Fuel 212 (2018) 679-683.
+
+NH2+O=HNO+H			                     	   .1500E+16   -.547    836.7 ! Sumathi, R., et al. J Phys Chem A, 102(18), 3175-3183. (1998) !\COMMENT: Fit from chart (Figure 5)
+ DUPLICATE
+NH2+O=HNO+H				                       .7730E+14   -.277    646.4 ! Sumathi, R., et al. J Phys Chem A, 102(18), 3175-3183. (1998) !\COMMENT: Fit from chart (Figure 5)
+ DUPLICATE
+ 
+ NH2+O*=HNO*+H			                       .1500E+16   -.547    836.7 ! 
+  DUPLICATE
+ NH2+O*=HNO*+H				                   .7730E+14   -.277    646.4 ! 
+  DUPLICATE
+
+NH2+O=NH+OH                                     7.000E+12   0.00    0.000E+00  ! Klaus 1997 error (+/-0.3)also used by KLIMIC2011/Zhang 2011/Lamoureux 2016
+ DUPLICATE                                                                     !
+NH2+O=NH+OH                                     8.600E-01   4.00    1.673E+03  !
+ DUPLICATE   
+ !
+ NH2+O*=NH+O*H                                  7.000E+12   0.00    0.000E+00  ! Klaus 1997 error (+/-0.3)also used by KLIMIC2011/Zhang 2011/Lamoureux 2016
+  DUPLICATE                                                                    !
+ NH2+O*=NH+O*H                                  8.600E-01   4.00    1.673E+03  !
+  DUPLICATE                                                                    !
+
+
+NH2+O=NO+H2                                     5.000E+12   0.00    0.000E+00  ! Klaus 1997 error (+/-1.0)
+NH2+O*=NO*+H2                                   5.000E+12   0.00    0.000E+00
+
+NH2+OH=NH+H2O                                   9.6E06      1.97    669        ! Mousavipour 2009
+NH2+O*H=NH+H2O*                                 9.6E06      1.97    669
+
+NH2+HO2=H2NO+OH                                 2.5E17     -1.28    1166       ! Sumathi 1996
+ NH2+HO*2=H2NO*+O*H                             2.5E17     -1.28    1166  
+ NH2+HOO*=H2NO*+OH                              1.25E17    -1.28    1166
+  REV /5.355E+18	-1.52 	24032.9/
+ NH2+HOO*=H2NO+O*H                              1.25E17    -1.28    1166
+  REV /5.355E+18	-1.52 	24032.9/
+ 
+
+NH2+HO2=NH3+O2                                  4.5E13      0       0          ! Sarkisov 1984
+ NH2+HO*2=NH3+O*2                               4.5E13      0       0          ! Sarkisov 1984
+ NH2+HOO*=NH3+OO*                               4.5E13      0       0          ! Sarkisov 1984
+
+NH2+O2=H2NO+O                                   2.6E11      0.4872  29050      ! Klippenstein 2011
+ NH2+O*2=H2NO*+O*                               2.6E11      0.4872  29050 
+ NH2+OO*=H2NO*+O                                1.3E11      0.4872  29050 
+  REV /8.688E+13	-0.14 	-1237.7/
+ NH2+OO*=H2NO+O*                                1.3E11      0.4872  29050
+  REV /8.688E+13	-0.14 	-1237.7/
+  
+NH2+O2=HNO+OH                                   2.9E-2      3.764   18185      ! Klippenstein 2011
+ NH2+O*2=HNO*+O*H                               2.9E-2      3.764   18185 
+ NH2+OO*=HNO*+OH                                1.45E-2     3.764   18185 
+  REV /2.477E-02	3.70 	27421.2/ 
+ NH2+OO*=HNO+O*H                                1.45E-2     3.764   18185 
+  REV /2.477E-02	3.70 	27421.2/ 
+
+NH2+NH=NH3+N                                    9.574E+03   2.46    1.073E+02  ! KLIMIC2009 200-2500 K
+NH2+NH=N2H3                                     7.0E13      0       0          ! Pagsberg 1979
+NH2+N=N2+H+H                                    7.2E13      0       0          ! Glarborg 1998
+
+NH2 + NO = N2 + H2O                             1.3E16     -1.250   0          ! Klippenstein 2011
+ DUPLICATE                                                          
+NH2 + NO = N2 + H2O                            -3.1E13     -0.480   1180
+ DUPLICATE    
+                                                      
+ NH2 + NO* = N2 + H2O*                          1.3E16     -1.250   0          ! Klippenstein 2011
+  DUPLICATE                                                          
+ NH2 + NO* = N2 + H2O*                          -3.1E13     -0.480   1180
+  DUPLICATE
+
+NH2 + NO = NNH + OH                             3.1E13     -0.480   1180
+ NH2 + NO* = NNH + O*H                          3.1E13     -0.480   1180
+
+NH2+NO=N2O+H2                                   1.000E+13   0.00    3.370E+04 ! Duynslaegher 2012
+ NH2+NO*=N2O*+H2                                1.000E+13   0.00    3.370E+04
+
+NH2+NO2=N2O+H2O                                 1.600E+16  -1.40    2.680E+02 ! Park and Lin 1997; J. Phys. Chem. A 1997, 101, 2643-2647
+ NH2+NO*2=N2O*+H2O*                             1.600E+16  -1.40    2.680E+02
+ NH2+NOO*=N2O*+H2O                              0.800E+16  -1.40    2.680E+02
+  REV /2.769E+18	-1.70 	91204.6/ 
+ NH2+NOO*=N2O+H2O*                              0.800E+16  -1.40    2.680E+02
+  REV /2.769E+18	-1.70 	91204.6/ 
+  
+NH2+NO2=H2NO+NO                                 6.500E+16  -1.40    2.680E+02 ! Park and Lin 1997; J. Phys. Chem. A 1997, 101, 2643-2647
+ NH2+NO*2=H2NO*+NO*                             6.500E+16  -1.40    2.680E+02
+ NH2+NOO*=H2NO*+NO                              3.2500E+16 -1.40    2.680E+02
+  REV /8.556E+16	-1.49 	15676.1/ 
+ NH2+NOO*=H2NO+NO*                              3.2500E+16 -1.40    2.680E+02
+  REV /8.556E+16	-1.49 	15676.1/ 
+
+NH2+HONO=NH3+NO2                                7.110E+01   3.00   -4.941E+03 ! Mebel 1996; J. Phys. Chem. 1996, 100, 7517-7525 751
+ NH2+HONO*=NH3+NOO*                             7.110E+01   3.00   -4.941E+03
+ NH2+HO*NO*=NH3+NO*2                            7.110E+01   3.00   -4.941E+03
+
+NH+NH=NH2+N                                     5.700E-01   3.88    3.420E+02 ! KLIMIC2009, 300-2500 K
+!------------------------------------------------------------------------------
+!---------------------2.4 N2H2 REACTIONS-------------------------------------------
+!------------------------------------------------------------------------------
+N2H2+M=NNH+H+M                                  1.8E40     -8.41    73320     ! Otomo 2018
+PLOG / 0.1   5.6E36  -7.75    70340./                                         !*
+PLOG / 1.0   1.8E40  -8.41    73320./                                         !*
+PLOG /10.0   3.1E41  -8.42    76102./                                         !*
+N2H2+H=NNH+H2                                   1.1E14      0       3128      !Zheng 2012
+
+N2H2+O=NH2+NO                                   1.000E+13   0.00    0.000E+00 ! SKR/GLA04 JAM est   KLIMIC2011
+ N2H2+O*=NH2+NO*                                1.000E+13   0.00    0.000E+00 
+
+N2H2+O=NNH+OH                                   3.300E+08   1.50    4.970E+02 ! SKR/GLA04 DEA/BOZ00 KLIMIC2011
+ N2H2+O*=NNH+O*H                                3.300E+08   1.50    4.970E+02
+
+N2H2+OH=NNH+H2O                                 5.9E01      3.4    -1363      ! Linder 1996
+ N2H2+O*H=NNH+H2O*                              5.9E01      3.4    -1363 
+
+N2H2+NO=N2O+NH2                                 4.000E+12   0.00    1.192E+04 ! SKR/GLA04 DEA/BOZ00 KLIMIC2011
+ N2H2+NO*=N2O*+NH2                              4.000E+12   0.00    1.192E+04
+
+N2H2+NH=NNH+NH2                                 2.400E+06   2.00   -1.192E+03 ! SKR/GLA04 DEA/BOZ00 KLIMIC2011
+N2H2+NH2=NNH+NH3                                8.8E-2      4.05   -1610      ! SKR/GLA04 LIN/PAG96 KLIMIC2011
+NH2+NH=N2H2+H                                   4.300E+14  -0.272  -7.700E+01 ! KLIMIC09 200-2500 K
+NH2+NH2=N2H2+H2                                 4.000E+13   0.00    1.184E+04 ! Klaus 1997 cited Miller 1989
+
+N2H2+HO2=NNH+H2O2                               1.000E+13   0.00    1.987E+03 ! Allen 1997 cited Hanson 1984
+ N2H2+HO*2=NNH+H2O*2                            1.000E+13   0.00    1.987E+03
+ N2H2+HOO*=NNH+H2OO*                            1.000E+13   0.00    1.987E+03
+ 
+
+N2H2+M=NH+NH+M                                  3.160E+16   0.00    9.935E+04 ! Allen 1997 cited Hanson 1984
+!------------------------------------------------------------------------------
+!--------------------------2.5 N2H4 REACTIONS--------------------------------------!
+!------------------------------------------------------------------------------
+NH2+NH2(+M)=N2H4(+M)                            5.600E+14  -0.414   6.600E+01 ! KLIMIC09
+LOW /1.6E+34 -5.49 1.987E+03/                                                 !
+TROE /0.31 1.0E-30 1.0E+30 1.0E+30/                                           !
+N2H4+M=N2H3+H+M                                 1.000E+15   0.00    6.360E+04 ! Allen 1997 also used by Coppens 2007
+N2/2.4/ NH3/3.0/ N2H4/4.0/    FN2/2.4/                                                !
+N2H4+H=N2H3+H2                                  4.5E07      1.8     2613      ! Hwang 2003
+
+N2H4+O=N2H2+H2O                                 4.400E+11   0.00   -1.270E+03 ! SKR/GLA04 VAG96 KLIMIC2011
+ N2H4+O*=N2H2+H2O*                              4.400E+11   0.00   -1.270E+03
+
+N2H4+O=N2H3+OH                                  6.700E+08   1.50    2.851E+03 ! SKR/GLA04 DEA/BOZ00 KLIMIC2011
+ N2H4+O*=N2H3+O*H                               6.700E+08   1.50    2.851E+03
+
+N2H4+OH=N2H3+H2O                                4.000E+13   0.00    0.000E+00 ! SKR/GLA04 HAR/ATK79 KLIMIC2011
+ N2H4+O*H=N2H3+H2O*                             4.000E+13   0.00    0.000E+00 
+
+N2H4+NH2=N2H3+NH3                               3.900E+12   0.00    1.500E+03 ! SKR/GLA04 GEH/WAG71 KLIMIC2011
+N2H4+H=NH2+NH3                                  4.460E+09   0.00    3.100E+03 ! Allen 1997
+N2H4+N2H2=N2H3+N2H3                             2.500E+10   0.50    2.980E+4  ! Allen 1997
+
+N2H4+HO2=N2H3+H2O2                              3.980E+13   0.00    1.990E+03 ! Allen 1997
+ N2H4+HO*2=N2H3+H2O*2                           3.980E+13   0.00    1.990E+03
+ N2H4+HOO*=N2H3+H2OO*                           3.980E+13   0.00    1.990E+03
+
+N2H4+NH=N2H3+NH2                                1.000E+12   0.00    1.990E+03 ! Allen 1997
+!---------------------------2.6 N2H3 REACTIONS-------------------------------------! 
+N2H3=N2H2+H                                     3.600E+47  -10.38   6.900E+04 ! SKR/GLA04 DEA/BOZ2000 1ATM M=N2 600-2500K
+NH2+NH2=N2H3+H                                  1.2E12     -0.03    10084     ! Dean 2000
+N2H3+H=N2H2+H2                                  2.400E+08   1.50   -1.000E+01 ! SKR/GLA04 DEA/BOZ2000
+N2H3+H=NH3+NH                                   1.000E+11   0.00    0.000E+00 ! Allen 1997 also used by Coppens 2007
+
+N2H3+O=N2H2+OH                                  1.700E+08   1.50   -6.460E+02 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+O*=N2H2+O*H                               1.700E+08   1.50   -6.460E+02
+
+N2H3+O=NH2+HNO                                  3.000E+13   0.00    0.000E+00 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+O*=NH2+HNO*                               3.000E+13   0.00    0.000E+00
+
+N2H3+O=NH2+NO+H                                 3.000E+13   0.00    0.000E+00 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+O*=NH2+NO*+H                              3.000E+13   0.00    0.000E+00
+
+N2H3+OH=N2H2+H2O                                1.200E+06   2.00   -1.192E+03 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+O*H=N2H2+H2O*                             1.200E+06   2.00   -1.192E+03
+
+N2H3+OH=H2NN+H2O                                3.000E+13   0.00    0.000E+00 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+O*H=H2NN+H2O*                             3.000E+13   0.00    0.000E+00
+
+N2H3+OH=NH3+HNO                                 1.000E+12   0.00    1.500E+04 ! SKR/GLA04 cited JAM est
+ N2H3+O*H=NH3+HNO*                              1.000E+12   0.00    1.500E+04
+
+N2H3+HO2=N2H2+H2O2                              1.400E+04   2.69   -1.600E+03 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+HO*2=N2H2+H2O*2                           1.400E+04   2.69   -1.600E+03
+ N2H3+HOO*=N2H2+H2OO*                           1.400E+04   2.69   -1.600E+03
+
+N2H3+HO2=N2H4+O2                                9.200E+05   1.94    2.126E+03 ! SKR/GLA04 cited DEA/BOZ2000
+ N2H3+HO*2=N2H4+O*2                             9.200E+05   1.94    2.126E+03
+ N2H3+HOO*=N2H4+OO*                             9.200E+05   1.94    2.126E+03
+
+N2H3+NH2=N2H2+NH3                               9.200E+05   1.94   -1.152E+03 ! SKR/GLA04 cited DEA/BOZ2000
+N2H3+NH2=H2NN+NH3                               3.000E+13   0.00    0.000E+00 ! SKR/GLA04 cited DEA/BOZ2000
+N2H3+NH=N2H2+NH2                                2.000E+13   0.00    0.000E+00 ! SKR/GLA04 JAM est
+N2H3+M=NH2+NH+M                                 5.000E+16   0.00    6.000E+04 ! Coppens 2007
+N2H3+N2H2=N2H4+NNH                              1.000E+13   0.00    9.940E+03 ! Allen 1997
+N2H3+N2H3=NH3+NH3+N2                            3.000E+12   0.00    0.000E+00 ! Coppens 2007
+N2H2+N2H2=N2H3+NNH                              1.000E+13   0.00    9.935E+03 ! Allen 1997 cited Hanson 1984
+!-----------------------------2.7 H2NN REACTIONS-----------------------------------!
+NH2+NH2=H2NN+H2                                 7.200E+04   1.88    8.802E+03 ! KLIMIC09
+H2NN=NNH+H                                      3.400E+26  -4.83    4.622E+04 ! SKR/GLA2004 cited DEA/BOZ2000 1 ATM also used by KLIMIC2011
+H2NN+H=NNH+H2                                   4.800E+08   1.50   -8.940E+02 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+H2NN+H=N2H2+H                                   7.000E+13   0.00    0.000E+00 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+
+H2NN+O=NNH+OH                                   3.300E+08   1.50   -8.940E+02 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+O*=NNH+O*H                                3.300E+08   1.50   -8.940E+02
+
+H2NN+O=NH2+NO                                   7.000E+13   0.00    0.000E+00 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+O*=NH2+NO*                                7.000E+13   0.00    0.000E+00
+
+H2NN+OH=NNH+H2O                                 2.400E+06   2.00   -1.192E+03 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+O*H=NNH+H2O*                              2.400E+06   2.00   -1.192E+03 
+
+H2NN+OH= NH2+NO+H                               2.000E+12   0.00    0.000E+00 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+O*H= NH2+NO*+H                            2.000E+12   0.00    0.000E+00
+
+H2NN+HO2= NH2+NO+OH                             9.000E+12   0.00    0.000E+00 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+HO*2= NH2+NO*+O*H                         9.000E+12   0.00    0.000E+00 !!!Ea=0
+ H2NN+HOO*= NH2+NO*+OH                          4.500E+12   0.00    0.000E+00
+  REV/2.576E+07	0.87 	-768.6/
+ H2NN+HOO*= NH2+NO+O*H                          4.500E+12   0.00    0.000E+00
+  REV/2.576E+07	0.87 	-768.6/
+  
+H2NN+HO2=NNH+H2O2                               2.900E+04   2.69   -1.600E+03 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+HO*2=NNH+H2O*2                            2.900E+04   2.69   -1.600E+03
+ H2NN+HOO*=NNH+H2OO*                            2.900E+04   2.69   -1.600E+03
+
+H2NN+O2=NH2+NO2                                 1.500E+12   0.00    5.961E+03 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+ H2NN+O*2=NH2+NO*2                              1.500E+12   0.00    5.961E+03
+ H2NN+OO*=NH2+NOO*                              1.500E+12   0.00    5.961E+03
+ 
+H2NN+NH2=NNH+NH3                                1.800E+06   1.94   -1.152E+03 ! SKR/GLA2004 cited DEA/BOZ2000  also used by KLIMIC2011
+!------------------------------------------------------------------------------
+!-------------------------2.8 HNOH REACTIONS---------------------------------------
+!------------------------------------------------------------------------------
+H2NO+M=HNOH+M                                   1.100E+29  -4.00    4.400E+04 ! Skreiberg 2004 cited DEN/BOZ2000 also used by KLIMIC2011 also used by Tian 2009/Zhang 2011
+H2O/10.0/ H2O*/10.0/                                                                    !
+ H2NO*+M=HNO*H+M                                1.100E+29  -4.00    4.400E+04
+  H2O/10.0/ H2O*/10.0/  
+  
+HNOH+M=HNO+H+M                                  2.000E+24  -2.80    5.893E+04 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+H2O/10.0/  H2O*/10.0/                                                                    !
+ HNO*H+M=HNO*+H+M                               2.000E+24  -2.80    5.893E+04
+  H2O/10.0/ H2O*/10.0/
+
+HNOH+H=NH2+OH                                   4.000E+13   0.00    0.000E+00 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ HNO*H+H=NH2+O*H                                4.000E+13   0.00    0.000E+00
+
+HNOH+H=HNO+H2                                   4.800E+08   1.50    3.780E+02 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ HNO*H+H=HNO*+H2                                4.800E+08   1.50    3.780E+02 
+
+HNOH+O=HNO+OH                                   7.000E+13   0.00    0.000E+00 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+DUPLICATE                                                                     !
+HNOH+O=HNO+OH                                   3.300E+08   1.50   -3.580E+02 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+DUPLICATE                                                                     !
+!ONE * 
+ HNO*H+O=HNO*+OH                                7.000E+13   0.00    0.000E+00 !P*- = P*+
+  DUPLICATE                                                                     
+ HNO*H+O=HNO*+OH                                3.300E+08   1.50   -3.580E+02 
+  DUPLICATE                                                                  
+  
+ !HNO*H+O=HNO+O*H                                3.500E+13   0.00    0.000E+00 
+ ! DUPLICATE                                                                     
+ !HNO*H+O=HNO+O*H                                1.650E+08   1.50   -3.580E+02 
+ ! DUPLICATE
+ 
+ !HNOH+O*=HNO*+OH                                3.500E+13   0.00    0.000E+00 
+ ! DUPLICATE                                                                     
+ !HNOH+O*=HNO*+OH                                1.650E+08   1.50   -3.580E+02 
+ ! DUPLICATE 
+  
+ HNOH+O*=HNO+O*H                               7.000E+13   0.00    0.000E+00 
+  DUPLICATE                                                                    
+ HNOH+O*=HNO+O*H                               3.300E+08   1.50   -3.580E+02 
+  DUPLICATE                                                                 
+  
+!TWO *  
+ HNO*H+O*=HNO*+O*H                              7.000E+13   0.00    0.000E+00  
+  DUPLICATE                                                                     
+ HNO*H+O*=HNO*+O*H                              3.300E+08   1.50   -3.580E+02 
+  DUPLICATE
+  
+HNOH+OH=HNO+H2O                                 2.400E+06   2.00   -1.192E+03 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ HNO*H+OH=HNO*+H2O                              2.400E+06   2.00   -1.192E+03  !P*- = P*+
+ !HNO*H+OH=HNO+H2O*                              1.200E+06   2.00   -1.192E+03
+ !HNOH+O*H=HNO*+H2O                              1.200E+06   2.00   -1.192E+03
+ HNOH+O*H=HNO+H2O*                              2.400E+06   2.00   -1.192E+03 
+ HNO*H+O*H=HNO*+H2O*                            2.400E+06   2.00   -1.192E+03
+ 
+HNOH+HO2=HNO+H2O2                               2.900E+04   2.70   -1.600E+03 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ !one 
+ HNO*H+HO2=HNO*+H2O2                            2.900E+04   2.70   -1.600E+03
+ !HNO*H+HO2=HNO+H2OO*                            1.4500E+04   2.70   -1.600E+03
+ !HNOH+HOO*=HNO*+H2O2                            1.4500E+04   2.70   -1.600E+03
+ HNOH+HOO*=HNO+H2OO*                            2.900E+04   2.70   -1.600E+03
+ !two
+ HNO*H+HOO*=HNO*+H2OO*                          2.900E+04   2.70   -1.600E+03
+ !HNO*H+HOO*=HNO+H2O*2                           1.4500E+04   2.70   -1.600E+03
+ !HNOH+HO*2=HNO*+H2OO*                           1.4500E+04   2.70   -1.600E+03
+ HNOH+HO*2=HNO+H2O*2                            2.900E+04   2.70   -1.600E+03
+ !three
+ HNO*H+HO*2=HNO*+H2O*2                          2.900E+04   2.70   -1.600E+03 
+ 
+HNOH+O2=HNO+HO2                                 3.000E+12   0.00    2.500E+04 ! Skreiberg 2004 cited cited Miller 1999 also used by Tian 2009/Zhang 2011
+ !one
+ HNO*H+O2=HNO*+HO2                              3.000E+12   0.00    2.500E+04
+ !HNO*H+O2=HNO+HOO*                              1.500E+12   0.00    2.500E+04
+ !HNOH+OO*=HNO*+HO2                              1.500E+12   0.00    2.500E+04
+ HNOH+OO*=HNO+HOO*                              3.000E+12   0.00    2.500E+04
+ !two
+ HNOH+O*2=HNO+HO*2                              3.000E+12   0.00    2.500E+04
+ !HNOH+O*2=HNO*+HOO*                             1.500E+12   0.00    2.500E+04
+ !HNO*H+OO*=HNO+HO*2                             1.500E+12   0.00    2.500E+04
+ HNO*H+OO*=HNO*+HOO*                            3.000E+12   0.00    2.500E+04
+ !three
+ HNO*H+O*2=HNO*+HO*2                            3.000E+12   0.00    2.500E+04
+ 
+HNOH+NH2=N2H3+OH                                1.000E+01   3.50   -4.670E+02 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ HNO*H+NH2=N2H3+O*H                             1.000E+01   3.50   -4.670E+02
+
+HNOH+NH2=H2NN+H2O                               8.800E+16  -1.10    1.113E+03 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ HNO*H+NH2=H2NN+H2O*                            8.800E+16  -1.10    1.113E+03
+
+HNOH+NH2=NH3+HNO                                1.800E+06   1.90   -1.152E+03 ! Skreiberg 2004 cited DEN/BOZ2000 also used by Tian 2009/Zhang 2011
+ HNO*H+NH2=NH3+HNO*                             1.800E+06   1.90   -1.152E+03
+
+
+HNOH+NO2=HONO+HNO                               6.000E+11   0.00    2.000E+03 ! Skreiberg 2004 cited Miller 1999 also used by Tian 2009/Zhang 2011
+ !one
+ !HNO*H+NO2=HONO*+HNO                           6.000E+11   0.00    2.000E+03 
+ HNO*H+NO2=HONO+HNO*                            6.000E+11   0.00    2.000E+03
+ HNOH+NOO*=HONO*+HNO                            6.000E+11   0.00    2.000E+03
+ !HNOH+NOO*=HONO+HNO*                           6.000E+11   0.00    2.000E+03
+ !two
+ !HNOH+NO*2=HONO*+HNO*                          6.000E+11   0.00    2.000E+03
+ HNOH+NO*2=HO*NO*+HNO                           6.000E+11   0.00    2.000E+03
+ HNO*H+NOO*=HONO*+HNO*                          6.000E+11   0.00    2.000E+03
+ !HNO*H+NOO*=HO*NO*+HNO                         6.000E+11   0.00    2.000E+03
+ !three 
+ HNO*H+NO*2=HO*NO*+HNO*                         6.000E+11   0.00    2.000E+03
+!-------------------------------------------------------------------------------
+!-----------------------2.9 NH3 REACTIONS-------------------------------------------!
+!-------------------------------------------------------------------------------
+NH3(+M)=NH+H2(+M)                               7.000E+15  -0.39    1.103E+05 ! Baulch 2005 error(+/-0.5) 2000-3000 K
+LOW/4.665E+14  0.00  9.315E+04/                                               ! Baulch 2005 error(+/-0.3) 2000-3000 K  M=AR
+TROE/ 0.42  4581.0  102.0  1.0E+14/                                           !
+H2/1.0/H2O/6.40/
+!CO2/1.50/
+O2/0.45/N2/0.40/AR/0.35/HE/0.35/
+!CO/0.75/CH4/3.0/C2H6/3.0/ ! Griffith & Barnard
+NH3+H=NH2+H2                                    6.360E+05   2.39    1.017E+04 ! Klaus 1997 also used by KLIMIC2011/Lamoureux 2016
+
+NH3+O=NH2+OH                                    1.626E+07   1.85    6.460E+03 ! Baulch 2005 error(+/-0.2-0.3) 300-2000 K
+ NH3+O*=NH2+O*H                                 1.626E+07   1.85    6.460E+03
+
+NH3+OH=NH2+H2O                                  3.25E+12    0       2.12E+03  ! Nakamura 2017
+ NH3+O*H=NH2+H2O*                               3.25E+12    0       2.12E+03 
+
+NH3+HO2=NH2+H2O2                                3.000E+11   0.00    2.200E+04 ! Skreiberg 2004 also used by Zhang 2011/Lamoureux 2016
+ NH3+HO*2=NH2+H2O*2                             3.000E+11   0.00    2.200E+04
+ NH3+HOO*=NH2+H2OO*                             3.000E+11   0.00    2.200E+04
+
+NH3+NH2=N2H3+H2                                 1.000E+11   0.50    2.160E+04 ! Coppens 2007
+NH3+NH+M=N2H4+M                                 1.09E15     0.0     0.0       ! Zetzsch 1981
+NH3=NH2+H				                        .3497E+31 -5.224  111163.3 !\AUTHOR: AS !\REF: Stagni, A. et al. React. Chem. Eng. (submitted) (2020). !\COMMENT: T = 800-2500 K fitted
+ PLOG / 0.1				                        .7230E+30 -5.316  110862.4 /
+ PLOG / 1				                        .3497E+31 -5.224  111163.3 /
+ PLOG / 10				                        .1975E+32 -5.155  111887.8 /
+ PLOG / 100				                        .2689E+32 -4.920  112778.7 /
+!------------------------------------------------------------------------------
+!--------------------2.10 NNH REACTIONS---------------------------------------------
+!------------------------------------------------------------------------------
+NNH=N2+H                                        1.0E09      0       0         ! Klippenstein 2011
+NNH+H=N2+H2                                     1.000E+14   0.00    0.000E+00 ! KLIMIC2011 also used by Tian 2009/Zhang 2011/Lamoureux 2016
+
+NNH+O=N2O+H                                     1.0E14      0       0         ! Glarborg 1998
+ NNH+O*=N2O*+H                                  1.0E14      0       0
+
+NNH+O=NH+NO                                     3.3E14     -0.23   -1013      ! Bozzelli1995
+ NNH+O*=NH+NO*                                  3.3E14     -0.23   -1013
+
+NNH+O=N2+OH                                     1.200E+13   0.145  -2.170E+02 ! KLIMIC2011 also used by Lamoureux 2016
+ NNH+O*=N2+O*H                                  1.200E+13   0.145  -2.170E+02
+
+NNH+OH=N2+H2O                                   5.000E+13   0.00    0.000E+00 ! KLIMIC2011 also used by Lamoureux 2016
+ NNH+O*H=N2+H2O*                                5.000E+13   0.00    0.000E+00 
+
+NNH+O2=N2+HO2                                   5.6E14     -0.385  -13        ! Klippenstein 2011
+ NNH+O*2=N2+HO*2                                5.6E14     -0.385  -13
+ NNH+OO*=N2+HOO*                                5.6E14     -0.385  -13
+
+NNH+O2=N2+H+O2                                  5.000E+13   0.00    0.000E+00 ! Glarborg; CF 115:1 C27 (1998) also used by Lamoureux 2016/Tian 2009/Zhang 2011
+ NNH+O*2=N2+H+O*2                               5.000E+13   0.00    0.000E+00
+ NNH+OO*=N2+H+OO*                               5.000E+13   0.00    0.000E+00
+
+NNH+NO=N2+HNO                                   5.000E+13   0.00    0.000E+00 ! KLIMIC2011 also used by Lamoureux 2016
+ NNH+NO*=N2+HNO*                                5.000E+13   0.00    0.000E+00
+
+NNH+NH=N2+NH2                                   5.000E+13   0.00    0.000E+00 ! KLIMIC2011 also used by Lamoureux 2016
+NNH+NH2=N2+NH3                                  5.000E+13   0.00    0.000E+00 ! KLIMIC2011 also used by Lamoureux 2016
+NNH+NNH=N2H2+N2                                 1.000E+13   0.00    9.935E+03 ! Allen 1997 cited Hanson 1984
+!-----------------------------------------------------------------------------
+!-------------------------2.11 HNO REACTIONS --------------------------------------
+!-----------------------------------------------------------------------------
+HNO=H+NO				 				        .18259e+21  -3.008  47880.0 !\AUTHOR: AS !\REF: Stagni, A. et al. React. Chem. Eng. (submitted) (2020). !\COMMENT: T = 500-2500 K fitted
+ PLOG /		      0.100  	 			        .20121e+20  -3.021  47792.0   /
+ PLOG /		      1.000		 			        .18259e+21  -3.008  47880.0   /
+ PLOG /		      10.00		 			        .12762e+22  -2.959  48100.0   /
+ PLOG /		      100.0		 			        .56445e+22  -2.855  48459.0   /
+ PLOG /		      1000.		 			        .97111e+22  -2.642  48940.0   /
+ HNO*=H+NO*				 				        .18259e+21  -3.008  47880.0 !\AUTHOR: AS !\REF: Stagni, A. et al. React. Chem. Eng. (submitted) (2020). !\COMMENT: T = 500-2500 K fitted
+  PLOG /		  0.100  	 			        .20121e+20  -3.021  47792.0   /
+  PLOG /		  1.000		 			        .18259e+21  -3.008  47880.0   /
+  PLOG /		  10.00		 			        .12762e+22  -2.959  48100.0   /
+  PLOG /		  100.0		 			        .56445e+22  -2.855  48459.0   /
+  PLOG /		  1000.		 			        .97111e+22  -2.642  48940.0   / 
+ 
+HNO+O=NO+OH                                     3.61E+13    0       0         ! Tsang 1991
+ HNO*+O=NO*+OH                                  3.61E+13   0       0
+ !HNO*+O=NO+O*H                                 3.61E+13   0       0
+ !HNO+O*=NO*+OH                                 3.61E+13   0       0
+ HNO+O*=NO+O*H                                  3.61E+13   0       0
+ HNO*+O*=NO*+O*H                                3.61E+13    0       0
+ 
+!updated bu JBZ
+HNO+H=NO+H2		                                9.000E11	0.72	660	! GRI3.0
+ HNO*+H=NO*+H2		                            9.000E11	0.72	660
+ 
+HNO+OH=NO+H2O                                   7.200E+13   0.00    0.000E+00 ! Miller 1981
+ HNO*+OH=NO*+H2O                                7.200E+13   0.00    0.000E+00
+ !HNO*+OH=NO+H2O*                               7.200E+13   0.00    0.000E+00
+ !HNO+O*H=NO*+H2O                               7.200E+13   0.00    0.000E+00
+ HNO+O*H=NO+H2O*                                7.200E+13   0.00    0.000E+00
+ HNO*+O*H=NO*+H2O*                              7.200E+13   0.00    0.000E+00
+ 
+HNO+O2=NO+HO2                                   2.000E+13   0.00    1.600E+04 ! Skreiberg 2004 also used by KLIMIC2011/Lamoureux 2016/Tian 2009/Zhang 2011
+ !one
+ HNO*+O2=NO*+HO2                                2.000E+13   0.00    1.600E+04  !P*- = P*+
+ !HNO*+O2=NO+HOO*                               2.000E+13   0.00    1.600E+04
+ !HNO+OO*=NO*+HO2                               2.000E+13   0.00    1.600E+04
+ HNO+OO*=NO+HOO*                                2.000E+13   0.00    1.600E+04
+ !TWO
+ HNO+O*2=NO+HO*2                                2.000E+13   0.00    1.600E+04
+ !HNO+O*2=NO*+HOO*                              2.000E+13   0.00    1.600E+04
+ !HNO*+OO*=NO+HO*2                              2.000E+13   0.00    1.600E+04
+ HNO*+OO*=NO*+HOO*                              2.000E+13   0.00    1.600E+04
+ !THREE
+ HNO*+O*2=NO*+HO*2                              2.000E+13   0.00    1.600E+04
+
+HNO+N=NO+NH                                     1.000E+13   0.00    1.990E+03 ! Klaus 1997 also used by Lamoureux 2016/Mathieu 2015
+ HNO*+N=NO*+NH                                  1.000E+13   0.00    1.990E+03
+
+HNO+N=N2O+H                                     5.000E+10   0.50    3.000E+03 ! Coppens 2007/Konnov 2009
+ HNO*+N=N2O*+H                                  5.000E+10   0.50    3.000E+03
+!HNO+NO->HN(O)NO->HONNO->N2O+OH
+HNO+NO=N2O+OH                                   2.000E+12   0.00    2.600E+04 ! Klaus 1997 also used by Dayma&Daguat 2006/Mueller 1999/Lamoureux 2016
+ !HNO*+NO=N2O*+OH                               2.000E+12   0.00    2.600E+04  !P*- = P*+
+ HNO*+NO=N2O+O*H                                2.000E+12   0.00    2.600E+04
+ HNO+NO*=N2O*+OH                                2.000E+12   0.00    2.600E+04
+ !HNO+NO*=N2O+O*H                               2.000E+12   0.00    2.600E+04
+ HNO*+NO*=N2O*+O*H                              2.000E+12   0.00    2.600E+04
+ 
+ 
+HNO+NO2=HONO+NO                                 4.400E+04   2.60    4.040E+03 ! Rasmussen 2008;IJCK 40:454-480 also used by KLIMIC2009/Tian 2009//Dayma&Daguat 2006/Mathieu 2015sssssssss
+ !ONE
+ HNO*+NO2=HONO*+NO                              4.400E+04   2.60    4.040E+03  !P*- = P*+
+ !HNO*+NO2=HONO+NO*                             4.400E+04   2.60    4.040E+03
+ !HNO+NOO*=HONO*+NO                             4.400E+04   2.60    4.040E+03
+ HNO+NOO*=HONO+NO*                              4.400E+04   2.60    4.040E+03
+ !TWO
+ HNO+NO*2=HONO*+NO*                             4.400E+04   2.60    4.040E+03  !(1,0.5)
+  REV/2.51E+05 2.15 35972.5 /!=0.5kr
+ !HNO+NO*2=HO*NO*+NO                             2.200E+04   2.60    4.040E+03
+ HNO*+NOO*=HONO*+NO*                            2.200E+04   2.60    4.040E+03   !(0.5,0.5)
+ HNO*+NOO*=HO*NO*+NO                            2.200E+04   2.60    4.040E+03   !(0.5,1)
+  REV/5.02E+05 2.15 35972.5 /!=kr
+ !THREE
+ HNO*+NO*2=HO*NO*+NO*                           4.400E+04   2.60    4.040E+03
+ 
+NH3+NO=NH2+HNO                                  3.26E07     1.73    5.66E04   ! Mebel 1996
+ NH3+NO*=NH2+HNO*                               3.26E07     1.73    5.66E04
+ 
+HNO+HNO=N2O+H2O                                 9.000E+08   0.00    3.100E+03 ! Glarborg 1998; CF 115,1-27 also used by Mueller 1999/KLIMIC2009/Tian 2009/Zhang 2011
+ HNO*+HNO=N2O*+H2O                              9.000E+08   0.00    3.100E+03 !
+!  REV/1.950E+12	-0.57 	94273.0/
+ HNO*+HNO=N2O+H2O*                              9.000E+08   0.00    3.100E+03
+!  REV/1.950E+12	-0.57 	94273.0/
+ HNO*+HNO*=N2O*+H2O*                            9.000E+08   0.00    3.100E+03 
+ 
+
+HNO+NH=NH2+NO                                   5.000E+11   0.50    0.000E+00 ! Coppens 2007 also used by Konnov 2009
+ HNO*+NH=NH2+NO*                                5.000E+11   0.50    0.000E+00
+
+!----------------------------------------------------------------------------
+!-------------------------2.12 HON REACTIONS--------------------------------------
+!----------------------------------------------------------------------------
+HON+M=NO+H+M                                   5.100E+19  -1.73  1.604E+04 ! Mathieu 2015 cited Dean and Bozzelli 2000 M=N2
+AR/0.7/  H2O/7.0/ H2O*/7.0/ 
+!CO2/2.0/                                                !
+ HO*N+M=NO*+H+M                                5.100E+19  -1.73  1.604E+04
+  AR/0.7/  H2O/7.0/ H2O*/7.0/ 
+  !CO2/2.0/
+  
+HON+H=HNO+H                                    2.400E+13   0.00  0.000E+00 ! Mathieu 2015 cited Dean and Bozzelli 2000
+ HO*N+H=HNO*+H                                 2.400E+13   0.00  0.000E+00 
+
+HON+H=OH+NH                                    1.000E+13   0.00  0.000E+00 ! Mathieu 2015 cited Dean and Bozzelli 2000
+ HO*N+H=O*H+NH                                 1.000E+13   0.00  0.000E+00
+
+HON+O=OH+NO                                    7.000E+13   0.00  0.000E+00 ! Mathieu 2015 cited Dean and Bozzelli 2000
+ !HO*N+O=O*H+NO                                7.000E+13   0.00  0.000E+00
+ HO*N+O=OH+NO*                                 7.000E+13   0.00  0.000E+00
+ HON+O*=O*H+NO                                 7.000E+13   0.00  0.000E+00
+ !HON+O*=OH+NO*                                7.000E+13   0.00  0.000E+00
+ HO*N+O*=O*H+NO*                               7.000E+13   0.00  0.000E+00 
+
+!HONO中的两个O不一样
+HON+OH=HONO+H                                  4.000E+13   0.00  0.000E+00 ! Mathieu 2015 cited Dean and Bozzelli 2000
+ HO*N+OH=HO*NO+H                               4.000E+13   0.00  0.000E+00
+ HON+O*H=HONO*+H                               4.000E+13   0.00  0.000E+00
+ HO*N+O*H=HO*NO*+H                             4.000E+13   0.00  0.000E+00
+
+!HON->OH
+HON+O2=NO2+OH                                  1.000E+12   0.00  4.968E+03 ! Mathieu 2015 cited Dean and Bozzelli 2000
+ !ONE
+ HO*N+O2=NO2+O*H                               1.000E+12     0.00  4.968E+03
+ !HO*N+O2=NOO*+OH                               1.000E+12     0.00  4.968E+03
+ !HON+OO*=NO2+O*H                               1.000E+12     0.00  4.968E+03
+ HON+OO*=NOO*+OH                                1.000E+12     0.00  4.968E+03
+ !TWO
+ HON+O*2=NO*2+OH                                1.000E+12     0.00  4.968E+03
+ !HON+O*2=NOO*+O*H                              1.000E+12     0.00  4.968E+03
+ !HO*N+OO*=NO*2+OH                               1.000E+12     0.00  4.968E+03
+ HO*N+OO*=NOO*+O*H                              1.000E+12     0.00  4.968E+03
+ !THREE
+ HO*N+O*2=NO*2+O*H                             1.000E+12   0.00  4.968E+03
+ 
+!-----------------------------------------------------------------------------
+!-------------------------2.13 NO REACTIONS----------------------------------------
+!-----------------------------------------------------------------------------
+NO+OH(+M)=HONO(+M)                             1.100E+14  -0.30    0.000E+00 ! Rasmussen ;IJCK 40: 454 C480,2008 cited FUL/TRO98 also used by KLIMIC2011/Mendiara 2009
+ LOW / 3.392E+23 -2.51  0.000E+00/                                            ! FUL/TRO98
+ TROE/0.75  1.0E-30  1.0E+30  1.0E+30/                                        ! FUL/TRO98 [M=He,T=400K]
+  NO*+O*H(+M)=HO*NO*(+M)                       1.100E+14  -0.30    0.000E+00 
+    LOW / 3.392E+23 -2.51  0.000E+00/                                           
+    TROE/0.75  1.0E-30  1.0E+30  1.0E+30/                                       
+  NO*+OH(+M)=HONO*(+M)                         1.100E+14  -0.30    0.000E+00 
+    REV/1.5775E+20	-1.56 	49877.4/                                                                    !!!k*- = 0.5k original-
+    LOW / 3.392E+23 -2.51  0.000E+00/                                           
+    TROE/0.75  1.0E-30  1.0E+30  1.0E+30/                                                                             
+  NO+O*H(+M)=HO*NO(+M)                         1.100E+14  -0.30    0.000E+00 
+    REV/1.5775E+20	-1.56 	49877.4/                                                                    !!!k*- = 0.5k original-
+    LOW / 3.392E+23 -2.51  0.000E+00/                                           
+    TROE/0.75  1.0E-30  1.0E+30  1.0E+30/
+
+NO+HO2=NO2+OH                                  2.100E+12   0.00   -4.800E+02 ! Baulch 2005 A/2.100E+12s error (+/-0.15) 200-2000K also used by Mueller 1999/Dayma 2007/Mendiara 2009
+ !ONE
+ !NO*+HO2=NO2+O*H                               1.050E+12   0.00   -4.800E+02
+ NO*+HO2=NOO*+OH                               2.100E+12   0.00   -4.800E+02   !(1,0.5)
+  REV/2.435E+13 -0.2 7038.8 /!=0.5kr
+ NO+HOO*=NO2+O*H                               1.050E+12   0.00   -4.800E+02  !(0.5,1)
+  REV/4.870E+13 -0.2 7038.8 /!=kr
+ NO+HOO*=NOO*+OH                               1.050E+12   0.00   -4.800E+02  !(0.5,0.5)-no need
+
+ !TWO
+ !NO+HO*2=NO*2+OH                               1.050E+12   0.00   -4.800E+02
+ NO+HO*2=NOO*+O*H                              2.100E+12   0.00   -4.800E+02  !(1,0.5)
+  REV/2.435E+13 -0.2 7038.8 /!=0.5kr
+ NO*+HOO*=NO*2+OH                              1.050E+12   0.00   -4.800E+02  !(0.5,1)
+  REV/4.870E+13 -0.2 7038.8 /!=kr 
+ NO*+HOO*=NOO*+O*H                             1.050E+12   0.00   -4.800E+02   !(0.5,0.5)-no need  
+ !three
+ NO*+HO*2=NO*2+O*H                             2.100E+12   0.00   -4.800E+02
+
+!------------------------------------------------------------------------------
+!------------------------2.14 NO2 REACTIONS-----------------------------------------
+!------------------------------------------------------------------------------
+NO2+H2=HONO+H                                  1.300E+04   2.76    2.977E+04 ! Rasmussen ;IJCK 40: 454 C480,2008 cited PAR/LIN98 also used by KLIMIC2011/Mendiara 2009
+ NO*2+H2=HO*NO*+H                              1.300E+04   2.76    2.977E+04
+ NOO*+H2=HONO*+H                               1.300E+04   2.76    2.977E+04
+ 
+NO2+H2=HNO2+H                                  2.400E+00   3.73    3.240E+04 ! Rasmussen ;IJCK 40: 454 C480,2008 (ab initio CBS-QB3) calculation also used by KLIMIC2011/Mendiara 2009
+ NO*2+H2=HNO*2+H                               2.400E+00   3.73    3.240E+04 
+ NOO*+H2=HNOO*+H                               2.400E+00   3.73    3.240E+04
+ 
+NO2+H=NO+OH                                    1.507E14    0       362       ! Zhang 2017 ! Thesis update
+ NO*2+H=NO*+O*H                                1.507E14    0       362
+ NOO*+H=NO*+OH                                 0.7535E14   0       362
+  REV/2.493E+09	0.88 	29356.5/ 
+ NOO*+H=NO+O*H                                 0.7535E14   0       362 
+  REV/2.493E+09	0.88 	29356.5/
+
+!O=N=O
+NO2+O=NO+O2                                     5.86E12     0      -238       ! Zhang 2017
+ !ONE
+ NOO*+O=NO*+O2                                  2.93E12     0      -238  !(0.5,1)
+  REV/2.310E+10 0.54 45457.8 /
+ NOO*+O=NO+OO*                                  2.93E12     0      -238  !(0.5,0.5)
+ !NO2+O*=NO*+O2                                 2.93E12     0      -238 
+ NO2+O*=NO+OO*                                  5.86E12     0      -238  !(1,0.5)
+  REV/1.155E+10 0.54 45457.8 /
+ !TWO
+ NOO*+O*=NO+O*2                                 2.93E12     0      -238 !(0.5,1)
+  REV/2.310E+10 0.54 45457.8 /
+ NOO*+O*=NO*+OO*                                2.93E12     0      -238 !(0.5,0.5)
+ !NO*2+O=NO+O*2                                 2.93E12     0      -238 
+ NO*2+O=NO*+OO*                                 5.86E12     0      -238 !(1,0.5)
+  REV/1.155E+10 0.54 45457.8 /
+ !THREE
+ NO*2+O*=NO*+O*2                                5.86E12     0      -238 
+
+NO+O(+M)=NO2(+M)                                1.3E15     -0.75    0         ! Zhang 2017
+ LOW/9.44E24  -2.87  1551/ 
+ TROE/0.962  10.0  7962/ 
+ AR /0.6/ NO2 /6.2/ NO /1.8/ O2 /0.8/ N2O /4.4/ 
+ NO*2 /6.2/ NO* /1.8/ O*2 /0.8/ N2O* /4.4/ 
+ NOO* /6.2/ OO* /0.8/
+ !CO2/6.0/ 
+ H2O /10.0/ 
+  NO*+O*(+M)=NO*2(+M)                           1.3E15     -0.75    0        
+   LOW/9.44E24  -2.87  1551/ 
+   TROE/0.962  10.0  7962/ 
+   AR /0.6/ NO2 /6.2/ NO /1.8/ O2 /0.8/ N2O /4.4/ 
+   NO*2 /6.2/ NO* /1.8/ O*2 /0.8/ N2O* /4.4/ 
+   NOO* /6.2/ OO* /0.8/
+   !CO2/6.0/ 
+   H2O /10.0/
+   H2O* /10.0/
+  NO*+O(+M)=NOO*(+M)                            1.3E15     -0.75    0 
+   REV/1.434E+19	-1.45 	73226.0/                                                                      !k*- = 0.5k original-
+   LOW/9.44E24  -2.87  1551/ 
+   TROE/0.962  10.0  7962/ 
+   AR /0.6/ NO2 /6.2/ NO /1.8/ O2 /0.8/ N2O /4.4/
+   NO*2 /6.2/ NO* /1.8/ O*2 /0.8/ N2O* /4.4/ 
+   NOO* /6.2/ OO* /0.8/   
+   !CO2/6.0/ 
+   H2O /10.0/
+   H2O* /10.0/
+  NO+O*(+M)=NOO*(+M)                            1.3E15     -0.75    0 
+   REV/1.434E+19	-1.45 	73226.0/                                                                      !k*- = 0.5k original-
+   LOW/9.44E24  -2.87  1551/ 
+   TROE/0.962  10.0  7962/ 
+   AR /0.6/ NO2 /6.2/ NO /1.8/ O2 /0.8/ N2O /4.4/
+   NO*2 /6.2/ NO* /1.8/ O*2 /0.8/ N2O* /4.4/ 
+   NOO* /6.2/ OO* /0.8/   
+   !CO2/6.0/ 
+   H2O /10.0/
+   H2O* /10.0/
+
+!NO2+OH(+M)=HONO2(+M)                            3.000E+13   0.00    0.000E+00 ! Rasmussen;IJCK 40: 454 C480,2008 also used by Mendiara 2009/KLIMIC2011 
+! LOW/ 2.938E+25 -3.00  0.000E+00 /                                             !
+! TROE /0.40  1.0E-30  1.0E+30  1.0E+30/                                        !
+! !one
+! NOO*+OH(+M)=HONOO*(+M)                         3.000E+13   0.00    0.000E+00
+!   REV/2.8595E+21	-1.58 	49923.2/                                                                      !k*- = 0.5k original-
+!   LOW/ 2.938E+25 -3.00  0.000E+00 /                                             
+!   TROE /0.40  1.0E-30  1.0E+30  1.0E+30/
+! NO2+O*H(+M)=HONOO*(+M)                         3.000E+13   0.00    0.000E+00
+!   REV/2.8595E+21	-1.58 	49923.2/                                                                      !k*- = 0.5k original-
+!   LOW/ 2.938E+25 -3.00  0.000E+00 /                                             
+!   TROE /0.40  1.0E-30  1.0E+30  1.0E+30/
+!   
+! !two
+! NO*2+OH(+M)=HONO*2(+M)                         3.000E+13   0.00    0.000E+00
+!   REV/2.8595E+21	-1.58 	49923.2/                                                                      !k*- = 0.5k original-
+!   LOW/ 2.938E+25 -3.00  0.000E+00 /                                             
+!   TROE /0.40  1.0E-30  1.0E+30  1.0E+30/ 
+! NOO*+O*H(+M)=HONO*2(+M)                        3.000E+13   0.00    0.000E+00
+!   REV/2.8595E+21	-1.58 	49923.2/                                                                      !k*- = 0.5k original-
+!   LOW/ 2.938E+25 -3.00  0.000E+00 /                                             
+!   TROE /0.40  1.0E-30  1.0E+30  1.0E+30/
+!   
+! !three 
+!  NO*2+O*H(+M)=HO*NO*2(+M)                      3.000E+13   0.00    0.000E+00 
+!   LOW/ 2.938E+25 -3.00  0.000E+00 /                                             
+!   TROE /0.40  1.0E-30  1.0E+30  1.0E+30/ 
+   
+!kr_origin:REV/8.034E+05 1.24 69.9/
+NO2+NO2=NO+NO+O2                                4.500E+12   0.00    2.760E+04 ! Rasmussen;IJCK 40: 454 C480,2008 cited PAR/LIN98 also used by Lamoureux 2016
+ 
+ NO2+NOO*=NO+NO*+O2                              4.500E+12   0.00    2.760E+04 ! (1,2)
+  REV/1.61E+06 1.24 69.9 /
+ NO2+NOO*=NO+NO+OO*                              4.500E+12   0.00    2.760E+04 ! (1,1)
+  REV/8.034E+05 1.24 69.9/
+ NO2+NO*2=NO+NO*+OO*                             9.000E+12   0.00    2.760E+04 ! (2,1)
+  REV/8.034E+05 1.24 69.9/
+ NOO*+NOO*=NO*+NO*+O2                            1.500E+12   0.00    2.760E+04 ! (1/3,1)
+  REV/8.034E+05 1.24 69.9/
+ NOO*+NOO*=NO*+NO+OO*                            1.500E+12   0.00    2.760E+04 ! (1/3,1)
+  REV/8.034E+05 1.24 69.9/
+ NOO*+NOO*=NO+NO+O*2                             1.500E+12   0.00    2.760E+04 ! (1/3,1)
+  REV/8.034E+05 1.24 69.9/
+ NOO*+NO*2=NO*+NO*+OO*                           4.500E+12   0.00    2.760E+04 ! (1,1)
+ NOO*+NO*2=NO+NO*+O*2                            4.500E+12   0.00    2.760E+04 ! (1,2)
+  REV/1.61E+06 1.24 69.9 /
+ NO*2+NO*2=NO*+NO*+O*2                           4.500E+12   0.00    2.760E+04 ! (1,1)
+ 
+! !ONE                        P*+=1/2                                           !k*- = k original-
+! NOO*+NO2=NO*+NO+O2                             2.25E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/                                                                      
+! NOO*+NO2=NO+NO+OO*                             2.25E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/     
+! 
+! !TWO                         P*+=1/3                                         !k*- = k original-
+! NOO*+NOO*=NO*+NO*+O2                           1.50E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/
+! NOO*+NOO*=NO*+NO+OO*                           1.50E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/
+! NOO*+NOO*=NO+NO+O*2                            1.50E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/  
+!  
+! NO*2+NO2=NO*+NO*+O2                            1.50E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/   
+! NO*2+NO2=NO*+NO+OO*                            1.50E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/
+! NO*2+NO2=NO+NO+O*2                             1.50E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/
+!  
+! !THREE                        P*+=1/2                                           !k*- = k original-                                                                       !k*- = k original-
+! NOO*+NO*2=NO*+NO*+OO*                          2.25E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/
+! NOO*+NO*2=NO+NO*+O*2                           2.25E+12   0.00    2.760E+04
+!  REV/8.034E+05	1.24 	69.9/ 
+!  
+! !FOUR
+! NO*2+NO*2=NO*+NO*+O*2                          4.500E+12   0.00    2.760E+04
+
+NO2+HO2=HONO+O2                                 1.910E+00   3.32    3.044E+03 ! Rasmussen;IJCK 40: 454 C480,2008 (ab initio CBS-QB3) calculation also used by KLIMIC2011/Tian 2009/Zhang2011/Mendiara 2009 
+ !ONE                          P*+=1
+ NOO*+HO2=HONO*+O2                              1.910E+00   3.32    3.044E+03
+ !NOO*+HO2=HONO+OO*                             1.910E+00   3.32    3.044E+03
+ !NO2+HOO*=HONO*+O2                             1.910E+00   3.32    3.044E+03
+ NO2+HOO*=HONO+OO*                              1.910E+00   3.32    3.044E+03
+ !TWO                          P*+=1
+ !NOO*+HOO*=HO*NO*+O2                           1.910E+00   3.32    3.044E+03
+ NOO*+HOO*=HONO*+OO*                            1.910E+00   3.32    3.044E+03
+ !NOO*+HOO*=HONO+O*2                            1.910E+00   3.32    3.044E+03
+ 
+ !NO2+HO*2=HO*NO*+O2                            1.910E+00   3.32    3.044E+03
+ !NO2+HO*2=HONO*+OO*                            1.910E+00   3.32    3.044E+03
+ NO2+HO*2=HONO+O*2                              1.910E+00   3.32    3.044E+03
+ 
+ NO*2+HO2=HO*NO*+O2                             1.910E+00   3.32    3.044E+03
+ !NO*2+HO2=HONO*+OO*                            1.910E+00   3.32    3.044E+03
+ !NO*2+HO2=HONO+O*2                             1.910E+00   3.32    3.044E+03
+
+ !THREE                         P*+=1
+ NOO*+HO*2=HONO*+O*2                            1.910E+00   3.32    3.044E+03
+ !NOO*+HO*2=HO*NO*+OO*                          1.910E+00   3.32    3.044E+03
+ 
+ !NO*2+HOO*=HONO*+O*2                           1.910E+00   3.32    3.044E+03
+ NO*2+HOO*=HO*NO*+OO*                           1.910E+00   3.32    3.044E+03
+ 
+ !FOUR
+ NO*2+HO*2=HO*NO*+O*2                           1.910E+00   3.32    3.044E+03 
+
+NO2+HO2=HNO2+O2                                 1.850E+01   3.26    4.983E+03 ! Rasmussen;IJCK 40: 454 C480,2008 (ab initio CBS-QB3) calculation also used by KLIMIC2011
+ !ONE
+ NOO*+HO2=HNOO*+O2                              1.850E+01   3.26    4.983E+03
+ !NOO*+HO2=HNO2+OO*                             1.850E+01   3.26    4.983E+03
+ !NO2+HOO*=HNOO*+O2                             1.850E+01   3.26    4.983E+03
+ NO2+HOO*=HNO2+OO*                              1.850E+01   3.26    4.983E+03
+ 
+ !TWO                          P*+=1
+ !NOO*+HOO*=HNO2+O*2                            1.850E+01   3.26    4.983E+03
+ NOO*+HOO*=HNOO*+OO*                            1.850E+01   3.26    4.983E+03
+ !NOO*+HOO*=HNO*2+O2                            1.850E+01   3.26    4.983E+03
+											    
+ NO2+HO*2=HNO2+O*2                              1.850E+01   3.26    4.983E+03
+ !NO2+HO*2=HNOO*+OO*                            1.850E+01   3.26    4.983E+03
+ !NO2+HO*2=HNO*2+O2                             1.850E+01   3.26    4.983E+03
+											    
+ !NO*2+HO2=HNO2+O*2                             1.850E+01   3.26    4.983E+03
+ !NO*2+HO2=HNOO*+OO*                            1.850E+01   3.26    4.983E+03
+ NO*2+HO2=HNO*2+O2                              1.850E+01   3.26    4.983E+03
+
+ !THREE                         P*+=1
+ NOO*+HO*2=HNOO*+O*2                            1.850E+01   3.26    4.983E+03
+ !NOO*+HO*2=HNO*2+OO*                           1.850E+01   3.26    4.983E+03
+											    
+ !NO*2+HOO*=HNOO*+O*2                           1.850E+01   3.26    4.983E+03
+ NO*2+HOO*=HNO*2+OO*                            1.850E+01   3.26    4.983E+03
+ 
+ !FOUR
+ NO*2+HO*2=HNO*2+O*2                            1.850E+01   3.26    4.983E+03 
+
+!-------------------------------------------------------------------------------
+!-----------------------2.15 N2O REACTIONS-------------------------------------------
+!-------------------------------------------------------------------------------
+N2O(+M)=N2+O(+M)                                .9900E+11    0.00    57901     !Baulch phys chem 2005 used by stagni 2023 
+ LOW /1.04E+15 0 5.98E+04/                                                         !Mulvihill 2020 used by Sun 2022
+ O2/1.4/ N2/1.7/ H2O/12.0/ NO/3.0/ N2O/3.5/ 
+ O*2/1.4/ H2O*/12.0/ NO*/3.0/ N2O*/3.5/ OO*/1.4/
+  N2O*(+M)=N2+O*(+M)                            .9900E+11    0.00    57901     
+   LOW /1.04E+15 0 5.98E+04/                                                        
+   O2/1.4/ N2/1.7/ H2O/12.0/ NO/3.0/ N2O/3.5/
+   O*2/1.4/ H2O*/12.0/ NO*/3.0/ N2O*/3.5/ OO*/1.4/
+
+N2O+H = N2+OH                                   3.870E+14   0.00    18880    ! GRI3.0 used by Okafor
+ N2O*+H = N2+O*H                                3.870E+14   0.00    18880   
+
+N2O+O=NO+NO                                     9.200E+13   0.00    2.767E+04 ! Baulch 2005 A/9.200E+13 error(+/-0.2-0.4) 1000-4000K
+ N2O*+O=NO*+NO                                  9.200E+13   0.00    2.767E+04
+!  REV/5.450E+08	0.94 	63096.7/                                                              
+ N2O+O*=NO*+NO                                  9.200E+13   0.00    2.767E+04
+ ! REV/5.450E+08	0.94 	63096.7/                                                              
+ N2O*+O*=NO*+NO*                                9.200E+13   0.00    2.767E+04
+
+N2O+O=N2+O2                                     3.700E+12   0.00    1.593E+04 ! Baulch 2005 A/3.700E+12 error(+/-0.2-0.5) 1000-2500K
+ N2O*+O=N2+OO*                                  3.700E+12   0.00    1.593E+04
+  REV/8.390E+08	0.86 	94704.7/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original-
+ N2O+O*=N2+OO*                                  3.700E+12   0.00    1.593E+04
+  REV/8.390E+08	0.86 	94704.7/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original- 
+ N2O*+O*=N2+O*2                                 3.700E+12   0.00    1.593E+04
+ 
+N2O+OH=N2+HO2                                   1.300E-02   4.70    3.656E+04 ! Mebel et al.;IJCK 1996, 28, 693 C703 also used by Tian 2009/KLIMIC2011/Zhang 2011
+ N2O*+OH=N2+HOO*                                1.300E-02   4.70    3.656E+04
+  REV/1.516E-05	5.31 	61953.4/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original- 
+ N2O+O*H=N2+HOO*                                1.300E-02   4.70    3.656E+04
+  REV/1.516E-05	5.31 	61953.4/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original-
+ N2O*+O*H=N2+HO*2                               1.300E-02   4.70    3.656E+04
+
+N2O+H2=N2+H2O                                   5.23E+04    2.272     43207.315     !Mulvihill 2025 
+ N2O*+H2=N2+H2O*                                5.23E+04    2.272     43207.315    
+ 
+N2O+NO=NO2+N2                                   5.300E+05   2.20    4.628E+04 ! Mebel et al.;IJCK 1996, 28, 693 C703 also used by Tian 2009/KLIMIC2011/Zhang 2011
+ N2O*+NO=NOO*+N2                                5.300E+05   2.20    4.628E+04
+  REV/1.423E+04	2.61 	79185.9/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original- 
+ N2O+NO*=NOO*+N2                                5.300E+05   2.20    4.628E+04
+  REV/1.423E+04	2.61 	79185.9/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original-
+ N2O*+NO*=NO*2+N2                               5.300E+05   2.20    4.628E+04
+ 
+N2O+N=N2+NO                                     1.000E+13   0.00    1.987E+04 ! Mathieu 2015
+ N2O*+N=N2+NO*                                  1.000E+13   0.00    1.987E+04
+
+!------------------------------------------------------------------------------
+!----------------------2.16 H2NO REACTIONS------------------------------------------
+!------------------------------------------------------------------------------
+H2NO+M=HNO+H+M                                  2.800E+24  -2.80    6.491E+04 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016 /KLIMIC2011/Tian 2009/Zhang 2011
+ H2O/10.0/ H2O*/10.0/                                                                    !
+  H2NO*+M=HNO*+H+M                              2.800E+24  -2.80    6.491E+04 
+   H2O/10.0/ H2O*/10.0/
+ 
+H2NO+H=HNO+H2                                   3.000E+07   2.00    2.000E+03 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016
+ H2NO*+H=HNO*+H2                                3.000E+07   2.00    2.000E+03
+
+H2NO+H=NH2+OH                                   5.000E+13   0.00    0.000E+00 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016
+ H2NO*+H=NH2+O*H                                5.000E+13   0.00    0.000E+00
+
+H2NO+O=HNO+OH                                   3.000E+07   2.00    2.000E+03 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016
+ H2NO*+O=HNO*+OH                                3.000E+07   2.00    2.000E+03
+ !H2NO*+O=HNO+O*H                               3.000E+07   2.00    2.000E+03
+ !H2NO+O*=HNO*+OH                               3.000E+07   2.00    2.000E+03
+ H2NO+O*=HNO+O*H                                3.000E+07   2.00    2.000E+03
+ H2NO*+O*=HNO*+O*H                              3.000E+07   2.00    2.000E+03
+
+H2NO+OH=HNO+H2O                                 1.000E+14   0.00    0.000E+00 ! Glarborg 2000 also used by Lamoureux 2016/Tian 2009
+ H2NO*+OH=HNO*+H2O                              1.000E+14   0.00    0.000E+00
+ !H2NO*+OH=HNO+H2O*                             1.000E+14   0.00    0.000E+00
+ !H2NO+O*H=HNO*+H2O                             1.000E+14   0.00    0.000E+00
+ H2NO+O*H=HNO+H2O*                              1.000E+14   0.00    0.000E+00
+ H2NO*+O*H=HNO*+H2O*                            1.000E+14   0.00    0.000E+00
+
+H2NO+NO=HNO+HNO                                 2.000E+04   2.00    1.300E+04 ! Glarborg 2000 also used by Lamoureux 2016/Zhang 2011/Tian 2009/KLIMIC2011
+ H2NO*+NO=HNO*+HNO                              2.000E+04   2.00    1.300E+04
+  !REV/607	2.36 	-2644.6/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original- 
+ H2NO+NO*=HNO*+HNO                              2.000E+04   2.00    1.300E+04
+  !REV/607	2.36 	-2644.6/                                                              !P*+ = 1;P*- = 0.5,k*- = 0.5 k original- 
+ H2NO*+NO*=HNO*+HNO*                            2.000E+04   2.00    1.300E+04
+
+H2NO+NH2=HNO+NH3                                3.000E+12   0.00    1.000E+03 ! Glarborg 2000 also used by Lamoureux 2016
+ H2NO*+NH2=HNO*+NH3                             3.000E+12   0.00    1.000E+03
+ 
+H2NO+HO2=HNO+H2O2                               2.900E+04   2.70   -1.600E+03 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016
+ H2NO*+HO2=HNO*+H2O2                            2.900E+04   2.70   -1.600E+03 
+ !H2NO*+HO2=HNO+H2OO*                           2.900E+04   2.70   -1.600E+03
+ !H2NO+HOO*=HNO*+H2O2                           2.900E+04   2.70   -1.600E+03 
+ H2NO+HOO*=HNO+H2OO*                            2.900E+04   2.70   -1.600E+03 
+ 
+ H2NO+HO*2=HNO+H2O*2                            2.900E+04   2.70   -1.600E+03
+ !H2NO+HO*2=HNO*+H2OO*                          2.900E+04   2.70   -1.600E+03
+ !H2NO*+HOO*=HNO+H2O*2                          2.900E+04   2.70   -1.600E+03 
+ H2NO*+HOO*=HNO*+H2OO*                          2.900E+04   2.70   -1.600E+03
+ 
+ H2NO*+HO*2=HNO*+H2O*2                          2.900E+04   2.70   -1.600E+03
+ 
+H2NO+O2=HNO+HO2                                 3.000E+12   0.00    2.500E+04 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016
+ H2NO*+O2=HNO*+HO2                              3.000E+12   0.00    2.500E+04
+ !H2NO*+O2=HNO+HOO*                             3.000E+12   0.00    2.500E+04
+ !H2NO+OO*=HNO*+HO2                             3.000E+12   0.00    2.500E+04
+ H2NO+OO*=HNO+HOO*                              3.000E+12   0.00    2.500E+04
+ 
+ H2NO+O*2=HNO+HO*2                              3.000E+12   0.00    2.500E+04
+ !H2NO+O*2=HNO*+HOO*                            3.000E+12   0.00    2.500E+04
+ !H2NO*+OO*=HNO+HO*2                            3.000E+12   0.00    2.500E+04
+ H2NO*+OO*=HNO*+HOO*                            3.000E+12   0.00    2.500E+04
+ 
+ H2NO*+O*2=HNO*+HO*2                            3.000E+12   0.00    2.500E+04
+ 
+H2NO+NO2=HONO+HNO                               6.000E+11   0.00    2.000E+03 ! Glarborg 2000 also used by Skreiberg 2004/Lamoureux 2016
+ !H2NO*+NO2=HONO*+HNO                           6.000E+11   0.00    2.000E+03
+ H2NO*+NO2=HONO+HNO*                            6.000E+11   0.00    2.000E+03
+ H2NO+NOO*=HONO*+HNO                            6.000E+11   0.00    2.000E+03
+ !H2NO+NOO*=HONO+HNO*                           6.000E+11   0.00    2.000E+03
+ 
+ !H2NO+NO*2=HONO*+HNO*                          6.000E+11   0.00    2.000E+03
+ H2NO+NO*2=HO*NO*+HNO                           6.000E+11   0.00    2.000E+03
+ H2NO*+NOO*=HONO*+HNO*                          6.000E+11   0.00    2.000E+03
+ !H2NO*+NOO*=HO*NO*+HNO                         6.000E+11   0.00    2.000E+03
+ 
+ H2NO*+NO*2=HO*NO*+HNO*                         6.000E+11   0.00    2.000E+03
+
+!-----------------------------------------------------------------------------
+!-------------------------2.17 HONO REACTIONS--------------------------------------! 
+!-----------------------------------------------------------------------------
+!o->oh
+HONO+O=NO2+OH                                   1.200E+13   0.00    6.000E+03 ! Rasmussen; IJCK 40, 454 C480 cited GLA/MIL98also used by Lamoureux 2016
+ !HONO*+O=NO2+O*H                               1.200E+13   0.00    6.000E+03
+ HONO*+O=NOO*+OH                                1.200E+13   0.00    6.000E+03
+  REV/1.625E+10 0.7 29187 /!=0.5kr
+ HONO+O*=NO2+O*H                                1.200E+13   0.00    6.000E+03
+ !HONO+O*=NOO*+OH                               1.200E+13   0.00    6.000E+03
+ 
+ !HONO*+O*=NO*2+OH                              1.200E+13   0.00    6.000E+03
+ HONO*+O*=NOO*+O*H                              1.200E+13   0.00    6.000E+03
+  REV/1.625E+10 0.7 29187 /!=0.5kr
+ HO*NO*+O=NO*2+OH                               1.200E+13   0.00    6.000E+03
+ !HO*NO*+O=NOO*+O*H                             1.200E+13   0.00    6.000E+03
+  
+  HO*NO+O=NOO*+OH                                1.200E+13   0.00    6.000E+03
+  REV/1.625E+10 0.7 29187 /!=0.5kr                                         
+  HO*NO+O*=NOO*+O*H                             1.200E+13   0.00    6.000E+03
+  REV/1.625E+10 0.7 29187 /!=0.5kr
+ HO*NO*+O*=NO*2+O*H                             1.200E+13   0.00    6.000E+03 
+ 
+HONO+H=HNO+OH                                   5.600E+10   0.90    5.000E+03 ! Skreiberg 2004 cited Hsu 1997 also used by KLIMIC2011/Lamoureux 2016
+ HONO*+H=HNO*+OH                                2.800E+10   0.90    5.000E+03
+  !REV/4.812E+04	2.31 	1981.9/   
+ HONO*+H=HNO+O*H                                2.800E+10   0.90    5.000E+03
+  !REV/4.812E+04	2.31 	1981.9/   
+ HO*NO+H=HNO*+OH                                2.800E+10   0.90    5.000E+03
+ HO*NO+H=HNO+O*H                                2.800E+10   0.90    5.000E+03
+ HO*NO*+H=HNO*+O*H                              5.600E+10   0.90    5.000E+03
+
+HONO+H=NO+H2O                                   8.100E+06   1.90    3.850E+03 ! Skreiberg 2004 cited Hsu 1997 also used by KLIMIC2011/Lamoureux 2016
+ HONO*+H=NO*+H2O                                4.050E+06   1.90    3.850E+03
+  !REV/6.974E+00	3.40 	72342.6/   !k*- = koriginal- 
+ HONO*+H=NO+H2O*                                4.050E+06   1.90    3.850E+03
+  !REV/6.974E+00	3.40 	72342.6/   !k*- = koriginal- 
+ HO*NO+H=NO*+H2O                                4.050E+06   1.90    3.850E+03
+  !REV/6.974E+00	3.40 	72342.6/   !k*- = koriginal- 
+ HO*NO+H=NO+H2O*                                4.050E+06   1.90    3.850E+03
+  !REV/6.974E+00	3.40 	72342.6/   !k*- = koriginal-  
+ HO*NO*+H=NO*+H2O*                              8.100E+06   1.90    3.850E+03
+
+
+HONO+OH=NO2+H2O                                 1.700E+12   0.00   -5.200E+02 ! Rasmussen; IJCK 40, 454 C480 cited BUR/RAV92 also used by KLIMIC2011 Lamoureux 2016
+ !HONO*+OH=NO2+H2O*                             1.700E+12   0.00   -5.200E+02
+ HONO*+OH=NOO*+H2O                              1.700E+12   0.00   -5.200E+02
+  REV/2.310E+10 0.7 38875.6 /!=0.5kr
+ HONO+O*H=NO2+H2O*                              1.700E+12   0.00   -5.200E+02
+ !HONO+O*H=NOO*+H2O                             1.700E+12   0.00   -5.200E+02
+ HO*NO+OH=NOO*+H2O                              1.700E+12   0.00   -5.200E+02
+  REV/2.310E+10 0.7 38875.6 /!=0.5kr
+ 
+ !HONO*+O*H=NO*2+H2O                            1.700E+12   0.00   -5.200E+02
+ HONO*+O*H=NOO*+H2O*                            1.700E+12   0.00   -5.200E+02
+  REV/2.310E+10 0.7 38875.6 /!=0.5kr
+ HO*NO*+OH=NO*2+H2O                             1.700E+12   0.00   -5.200E+02
+ !HO*NO*+OH=NOO*+H2O*                           1.700E+12   0.00   -5.200E+02
+ HO*NO+O*H=NOO*+H2O*                            1.700E+12   0.00   -5.200E+02
+  REV/2.310E+10 0.7 38875.6 /!=0.5kr
+ HO*NO*+O*H=NO*2+H2O*                           1.700E+12   0.00   -5.200E+02
+
+!HONO+NO2=HONO2+NO                               2.000E+11   0.00    3.270E+04 ! Rasmussen; IJCK 40, 454 C480 cited PAR/LIN98
+! HONO*+NO2=HONO2+NO*                            1.000E+11   0.00    3.270E+04
+! HONO*+NO2=HONOO*+NO                            1.000E+11   0.00    3.270E+04
+! HONO+NOO*=HONO2+NO*                            1.000E+11   0.00    3.270E+04
+! HONO+NOO*=HONOO*+NO                            1.000E+11   0.00    3.270E+04
+! 
+! HONO+NO*2=HONO*2+NO                            1.000E+11   0.00    3.270E+04
+! HONO+NO*2=HONOO*+NO*                           1.000E+11   0.00    3.270E+04
+! HONO*+NOO*=HONO*2+NO                           1.000E+11   0.00    3.270E+04
+! HONO*+NOO*=HONOO*+NO*                          1.000E+11   0.00    3.270E+04
+ 
+!HO*NO*+NO*2=HO*NO*2+NO*                        2.000E+11   0.00    3.270E+04
+
+
+HONO+HONO=NO+H2O+NO2                            3.500E-01   3.64    1.214E+04 ! Rasmussen; IJCK 40, 454 C480 cited MEB/MEL98
+! !ONE !P*+ = 1/3,P*- = 1
+! HONO*+HONO=NO*+NO2+H2O                         1.167E-01   3.64    1.214E+04
+!  REV/3.122E-09 5.61 1648.9/
+! HONO*+HONO=NO+NOO*+H2O                         1.167E-01   3.64    1.214E+04
+!  REV/3.122E-09 5.61 1648.9/ 
+! HONO*+HONO=NO+NO2+H2O*                         1.167E-01   3.64    1.214E+04
+!  REV/3.122E-09 5.61 1648.9/ 
+!  
+! !TWO !P*+ = 0.25,P*- = 1/2
+! HO*NO*+HONO=NO*+NO2+H2O*                       0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/ 
+! HO*NO*+HONO=NO*+NOO*+H2O                       0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/  
+! HO*NO*+HONO=NO+NO*2+H2O                        0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/
+! HO*NO*+HONO=NO+NOO*+H2O*                       0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/ 
+! HONO*+HONO*=NO*+NO2+H2O*                       0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/ 
+! HONO*+HONO*=NO*+NOO*+H2O                       0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/ 
+! HONO*+HONO*=NO+NO*2+H2O                        0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/ 
+! HONO*+HONO*=NO+NOO*+H2O*                       0.875E-01   3.64    1.214E+04
+!  REV/1.561E-09 5.61 1648.9/
+!  
+! !THREE!P*+ = 1/3,P*- = 1
+! HO*NO*+HONO*=NO*+NO*2+H2O                      1.167E-01   3.64    1.214E+04
+!  REV/3.122E-09 5.61 1648.9/
+! HO*NO*+HONO*=NO*+NOO*+H2O*                     1.167E-01   3.64    1.214E+04
+!  REV/3.122E-09 5.61 1648.9/ 
+! HO*NO*+HONO*=NO+NO*2+H2O*                      1.167E-01   3.64    1.214E+04
+!  REV/3.122E-09 5.61 1648.9/ 
+!  
+! !FOUR
+! HO*NO*+HO*NO*=NO*+NO*2+H2O*                    3.500E-01   3.64    1.214E+04
+!k_original_reverse/3.122E-09  5.61  1648.9/
+HONO+HONO*=NO*+NO2+H2O                           3.500E-01   3.64    1.214E+04 !(1,1)
+HONO+HONO*=NO+NOO*+H2O                           3.500E-01   3.64    1.214E+04 !(1,0.5)
+ REV/1.561E-09 5.61 1648.9 /
+ 
+HONO+HO*NO=NO+NO2+H2O*                           3.500E-01   3.64    1.214E+04 !(1,1)
+HONO+HO*NO=NO+NOO*+H2O                           3.500E-01   3.64    1.214E+04 !(1,0.5)
+ REV/1.561E-9 5.61 1648.9 /
+ 
+HONO+HO*NO*=NO*+NO2+H2O*                         3.500E-01   3.64    1.214E+04 !(1,1)
+HONO+HO*NO*=NO+NOO*+H2O*                         3.500E-01   3.64    1.214E+04 !(1,1/3)
+ REV/1.04067E-9 5.61 1648.9 /
+ 
+HONO*+HONO*=NO*+NOO*+H2O                         3.500E-01   3.64    1.214E+04 !(1,1/2)
+ REV/1.561E-9 5.61 1648.9 /
+ 
+HONO*+HO*NO=NO+NOO*+H2O*                         3.500E-01   3.64    1.214E+04 !(1,1/3)
+ REV/1.04067E-9 5.61 1648.9 /
+HONO*+HO*NO=NO*+NOO*+H2O                         3.500E-01   3.64    1.214E+04 !(1,1/2)
+ REV/1.561E-9 5.61 1648.9 /
+ 
+HONO*+HO*NO*=NO*+NOO*+H2O*                       3.500E-01   3.64    1.214E+04 !(1,1)
+HONO*+HO*NO*=NO*+NO*2+H2O                        3.500E-01   3.64    1.214E+04 !(1,1)
+
+HO*NO+HO*NO=NO+NOO*+H2O*                         3.500E-01   3.64    1.214E+04 !(1,1/3)
+ REV/1.04067E-9 5.61 1648.9 /
+ 
+HO*NO+HO*NO*=NO*+NOO*+H2O*                       3.500E-01   3.64    1.214E+04 !(1,1)
+HO*NO+HO*NO*=NO+NO*2+H2O*                        3.500E-01   3.64    1.214E+04 !(1,1)
+
+HO*NO*+HO*NO*=NO*+NO*2+H2O*                      3.500E-01   3.64    1.214E+04 !(1,1)
+ 
+!------------------------------------------------------------------------------
+!------------------------2.18 HNO2 REACTIONS----------------------------------------!
+!------------------------------------------------------------------------------
+HNO2(+M)=HONO(+M)                               2.500E+14   0.00    3.230E+04 ! Rasmussen; IJCK 40, 454 C480 (ab initio CBS-QB3) calculation
+ LOW /  3.100E+18   0.0   3.150E+04 /                                          !
+ TROE /1.149  1E-30  3.125E+03  1E+30 /                                        !
+  HNO*2(+M)=HO*NO*(+M)                          2.500E+14   0.00    3.230E+04 
+    LOW /  3.100E+18   0.0   3.150E+04 /                                          
+    TROE /1.149  1E-30  3.125E+03  1E+30 / 
+  HNOO*(+M)=HONO*(+M)                           1.25E+14   0.00    3.230E+04
+    REV/6.680E+14 -0.45 40740.7 /!=kr  
+    LOW /  3.100E+18   0.0   3.150E+04 /                                          
+    TROE /1.149  1E-30  3.125E+03  1E+30 / 
+  HNOO*(+M)=HO*NO(+M)                           1.25E+14   0.00    3.230E+04
+    REV/6.680E+14 -0.45 40740.7 /!=kr   
+    LOW /  3.100E+18   0.0   3.150E+04 /                                          
+    TROE /1.149  1E-30  3.125E+03  1E+30 /
+	
+HNO2+O=NO2+OH                                   1.700E+08   1.50    2000.0    ! Rasmussen; IJCK 40, 454 C480 cited DEA/BOZ00 also used by KLIMIC2011
+ HNO2+O*=NO2+O*H                                1.700E+08   1.50    2000.0
+ !HNO2+O*=NOO*+OH                               1.700E+08   1.50    2000.0
+ !HNOO*+O=NO2+O*H                               1.700E+08   1.50    2000.0
+ HNOO*+O=NOO*+OH                                1.700E+08   1.50    2000.0
+ 
+ HNO*2+O=NO*2+OH                                1.700E+08   1.50    2000.0
+ !HNO*2+O=NOO*+O*H                              1.700E+08   1.50    2000.0
+ !HNOO*+O*=NO*2+OH                              1.700E+08   1.50    2000.0
+ HNOO*+O*=NOO*+O*H                              1.700E+08   1.50    2000.0
+ 
+ HNO*2+O*=NO*2+O*H                              1.700E+08   1.50    2000.0
+ 
+ 
+HNO2+OH=NO2+H2O                                 4.000E+13   0.00    0.000E+00 ! Rasmussen; IJCK 40, 454 C480 (ab initio CBS-QB3) calculation also used by Mendiara 2009/Klippenstein 2011
+ HNO2+O*H=NO2+H2O*                              4.000E+13   0.00    0.000E+00
+ !HNO2+O*H=NOO*+H2O                             4.000E+13   0.00    0.000E+00
+ !HNOO*+OH=NO2+H2O*                             4.000E+13   0.00    0.000E+00
+ HNOO*+OH=NOO*+H2O                              4.000E+13   0.00    0.000E+00
+ 
+ HNOO*+O*H=NOO*+H2O*                            4.000E+13   0.00    0.000E+00
+ !HNOO*+O*H=NO*2+H2O                            4.000E+13   0.00    0.000E+00
+ !HNO*2+OH=NOO*+H2O*                            4.000E+13   0.00    0.000E+00
+ HNO*2+OH=NO*2+H2O                              4.000E+13   0.00    0.000E+00
+ 
+ HNO*2+O*H=NO*2+H2O*                            4.000E+13   0.00    0.000E+00
+ 
+
+!!------------------------------------------------------------------------------
+!!--------------------------2.19 HONO2 REACTIONS-------------------------------------
+!!------------------------------------------------------------------------------
+!HONO2+H=H2+NO3                                  5.600E+08   1.50    16400.0   ! Rasmussen; IJCK 40, 454 C480 cited BOU/LIN97 also used by KLIMIC2011
+! HONOO*+H=H2+NOOO*                              5.600E+08   1.50    16400.0
+! HONO*O*+H=H2+NOO*O*                            5.600E+08   1.50    16400.0
+! HO*NO*2+H=H2+NO*3                              5.600E+08   1.50    16400.0
+! 
+!HONO2+H=H2O+NO2                                 6.100E+01   3.30    6285.0    ! Rasmussen; IJCK 40, 454 C480 cited BOU/LIN97 also used by KLIMIC2011
+! HONOO*+H=H2O*+NO2                              3.050E+01   3.30    6285.0
+!  REV/4.112E-06	4.91 	75026.7/               !k*-= koriginal-
+! HONOO*+H=H2O+NOO*                              3.050E+01   3.30    6285.0
+!  REV/4.112E-06	4.91 	75026.7/               !k*-= koriginal-
+! HONO*O*+H=H2O*+NOO*                            3.050E+01   3.30    6285.0
+!  REV/4.112E-06	4.91 	75026.7/               !k*-= koriginal-
+! HONO*O*+H=H2O+NO*2                             3.050E+01   3.30    6285.0
+!  REV/4.112E-06	4.91 	75026.7/               !k*-= koriginal-
+! HO*NO*2+H=H2O*+NO*2                            6.100E+01   3.30    6285.0
+!
+! 
+!HONO2+H=OH+HONO                                 3.800E+05   2.30    6976.0    ! Rasmussen; IJCK 40, 454 C480 cited BOU/LIN97 also used by KLIMIC2011
+! HONOO*+H=O*H+HONO                              1.900E+05   2.30    6976.0
+!  REV/9.193E-02	3.51 	35918.3/               !k*-= koriginal-
+! HONOO*+H=OH+HONO*                              1.900E+05   2.30    6976.0
+!  REV/9.193E-02	3.51 	35918.3/               !k*-= koriginal-
+! HONO*O*+H=O*H+HONO*                            1.900E+05   2.30    6976.0
+!  REV/9.193E-02	3.51 	35918.3/               !k*-= koriginal-
+! HONO*O*+H=OH+HO*NO*                            1.900E+05   2.30    6976.0
+!  REV/9.193E-02	3.51 	35918.3/               !k*-= koriginal-
+! HO*NO*2+H=O*H+HO*NO*                           3.800E+05   2.30    6976.0
+!  
+!HONO2+OH=H2O+NO3                                1.000E+10   0.00   -1240.0    ! Rasmussen; IJCK 40, 454 C480 cited LAM/BEN84 also used by KLIMIC2011
+! !ONE
+! HONO2+O*H=H2O*+NO3                             0.500E+10   0.00   -1240.0
+! HONO2+O*H=H2O+NOOO*                            0.500E+10   0.00   -1240.0
+! HONOO*+OH=H2O*+NO3                             0.500E+10   0.00   -1240.0
+! HONOO*+OH=H2O+NOOO*                            0.500E+10   0.00   -1240.0
+! !TWO
+! HONO*O*+OH=H2O+NOO*O*                          0.500E+10   0.00   -1240.0
+! HONO*O*+OH=H2O*+NOOO*                          0.500E+10   0.00   -1240.0
+! HONOO*+O*H=H2O+NOO*O*                          0.500E+10   0.00   -1240.0
+! HONOO*+O*H=H2O*+NOOO*                          0.500E+10   0.00   -1240.0
+! !THREE
+! HONO*O*+O*H=H2O+NO*3                           0.500E+10   0.00   -1240.0
+! HONO*O*+O*H=H2O*+NOO*O*                        0.500E+10   0.00   -1240.0
+! HO*NO*2+OH=H2O+NO*3                            0.500E+10   0.00   -1240.0
+! HO*NO*2+OH=H2O*+NOO*O*                         0.500E+10   0.00   -1240.0
+! !FOUR
+! HO*NO*2+O*H=H2O*+NO*3                          1.000E+10   0.00   -1240.0
+
+!------------------------------------------------------------------------------
+!---------------------------2.20 NO3 REACTIONS-------------------------------------- 
+!------------------------------------------------------------------------------
+!O2+O(+M)=NO3(+M)                               3.500E+12   0.20    0.000E+00 ! Mendiara 2009
+!LOW / 2.500E+20 -1.50  0.000E+00 /                                            ! M=N2
+!TROE /0.71  1.0E-30  1700.0  1.0E+30/                                         ! Fc=0.71*exp(-T/1700)
+! NO2+O*(+M)=NOOO*(+M)                          3.500E+12   0.20    0.000E+00 
+!  REV/8.6077E+17	-0.82 	50080.8/                                                                     !k*- = 0.5* k origianl -
+!  LOW / 2.500E+20 -1.50  0.000E+00 /                                          
+!  TROE /0.71  1.0E-30  1700.0  1.0E+30/
+! NOO*+O(+M)=NOOO*(+M)                          3.500E+12   0.20    0.000E+00 
+!  REV/8.6077E+17	-0.82 	50080.8/                                                                !k*- = 0.5* k origianl -
+!  LOW / 2.500E+20 -1.50  0.000E+00 /                                          
+!  TROE /0.71  1.0E-30  1700.0  1.0E+30/   
+! 
+! NOO*+O*(+M)=NOO*O*(+M)                        3.500E+12   0.20    0.000E+00 
+!  REV/8.6077E+17	-0.82 	50080.8/                                                                  !k*- = 0.5* k origianl -
+!  LOW / 2.500E+20 -1.50  0.000E+00 /                                          
+!  TROE /0.71  1.0E-30  1700.0  1.0E+30/
+! NO*2+O(+M)=NOO*O*(+M)                         3.500E+12   0.20    0.000E+00 
+!  REV/8.6077E+17	-0.82 	50080.8/                                                                   !k*- = 0.5* k origianl -
+!  LOW / 2.500E+20 -1.50  0.000E+00 /                                          
+!  TROE /0.71  1.0E-30  1700.0  1.0E+30/ 
+! 
+! NO*2+O*(+M)=NO*3(+M)                          3.500E+12   0.20    0.000E+00 ! Mendiara 2009
+!  LOW / 2.500E+20 -1.50  0.000E+00 /                                            ! M=N2
+!  TROE /0.71  1.0E-30  1700.0  1.0E+30/ 
+!    
+!O2+NO2=NO3+NO                                  9.60E+09    0.70    2.090E+04 ! Mendiara and Glarborg 2009
+!!one
+!NO2+NOO*=NO3+NO*                               4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/                                                        !k*- = koriginal-
+!NO2+NOO*=NOOO*+NO                              4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/            
+!
+!!two
+!NO2+NO*2=NOOO*+NO*                             4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/                                                        !k*- = koriginal- 
+!NO2+NO*2=NOO*O*+NO                             4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/
+! 
+!NOO*+NOO*=NOOO*+NO*                            4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/                                                    !k*- = koriginal- 
+!NOO*+NOO*=NOO*O*+NO                            4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/ !k*- = koriginal- 
+!
+!!THREE
+!NOO*+NO*2=NOO*O*+NO*                           4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/                                                    !k*- = koriginal- 
+!NOO*+NO*2=NO*3+NO                              4.80E+09    0.70    2.090E+04
+! REV/6.650E+11	0.24 	-1966.8/ 
+!
+!!four
+!NO*2+NO*2=NO*3+NO*                             9.60E+09    0.70    2.090E+04
+!
+!O3+H=NO2+OH                                    6.00E+13    0.00    0.000E+00 ! Mendiara and Glarborg 2009
+!NOOO*+H=NO2+O*H                                3.00E+13    0.00    0.000E+00
+! REV/ ?/                                                                    !k*- = koriginal-  
+!NOOO*+H=NOO*+OH                                3.00E+13    0.00    0.000E+00
+! REV/ ?/
+!
+!NOO*O*+H=NO*2+OH                               3.00E+13    0.00    0.000E+00
+! REV/ ?/
+!NOO*O*+H=NOO*+O*H                              3.00E+13    0.00    0.000E+00
+! REV/ ?/
+!
+!NO*3+H=NO*2+O*H                                6.00E+13    0.00    0.000E+00
+!
+!O3+O=NO2+O2                                    1.00E+13    0.00    0.000E+00 ! Mendiara and Glarborg 2009
+!!ONE  !P*+ = 1/2 = P*-
+!NO3+O*=NOO*+O2                                 0.50E+13    0.00    0.000E+00
+!NO3+O*=NO2+OO*                                 0.50E+13    0.00    0.000E+00
+!NOOO*+O=NOO*+O2                                0.50E+13    0.00    0.000E+00
+!NOOO*+O=NO2+OO*                                0.50E+13    0.00    0.000E+00
+!
+!!TWO   !P*+ = 1/3 ;P*- = 0.5 NEED RESERVE
+!NOOO*+O*=NOO*+OO*                              0.333E+13   0.00    0.000E+00
+! REV/ ? /                                                                   !k*- = 0.5*k original-
+!NOOO*+O*=NO*2+O2                               0.333E+13   0.00    0.000E+00
+! REV/ ? / 
+!NOOO*+O*=NO2+O*2                               0.333E+13   0.00    0.000E+00
+! REV/ ? / 
+!
+!NOO*O*+O=NOO*+OO*                              0.333E+13   0.00    0.000E+00
+! REV/ ? /                                                                   !k*- = 0.5*k original- 
+!NOO*O*+O=NO*2+O2                               0.333E+13   0.00    0.000E+00
+! REV/ ? /                                                                   !k*- = 0.5*k original- 
+!NOO*O*+O=NO2+O*2                               0.333E+13   0.00    0.000E+00
+! REV/ ? /                                                                   !k*- = 0.5*k original-
+!
+!!three   !P*+ = 1/2 = P*-
+!NO*3+O=NOO*+O*2                                0.50E+13    0.00    0.000E+00
+!NO*3+O=NO*2+OO*                                0.50E+13    0.00    0.000E+00
+!NOO*O*+O*=NOO*+O*2                             0.50E+13    0.00    0.000E+00
+!NOO*O*+O*=NO*2+OO*                             0.50E+13    0.00    0.000E+00
+!
+!!four
+!NO*3+O*=NO*2+O*2                               1.00E+13    0.00    0.000E+00
+!
+!O3+OH=NO2+HO2                                  1.40E+13    0.00    0.000E+00 ! Mendiara and Glarborg 2009
+! !ONE  !P*+ = 1/2 = P*-
+!NO3+O*H=NOO*+HO2                               0.70E+13    0.00    0.000E+00
+!NO3+O*H=NO2+HOO*                               0.70E+13    0.00    0.000E+00
+!NOOO*+OH=NOO*+HO2                              0.70E+13    0.00    0.000E+00
+!NOOO*+OH=NO2+HOO*                              0.70E+13    0.00    0.000E+00
+!
+!!TWO   !P*+ = 1/3 ;P*- = 0.5 NEED RESERVE
+!NOOO*+O*H=NOO*+HOO*                            0.467E+13   0.00    0.000E+00
+! REV/ ? /                                                                   !k*- = 0.5*k original-
+!NOOO*+O*H=NO*2+HO2                             0.467E+13   0.00    0.000E+00
+! REV/ ? / 
+!NOOO*+O*H=NO2+HO*2                             0.467E+13   0.00    0.000E+00
+! REV/ ? / 
+!
+!NOO*O*+OH=NOO*+HOO*                            0.467E+13   0.00    0.000E+00
+! REV/ ? /                                                                 !k*- = 0.5*k original- 
+!NOO*O*+OH=NO*2+HO2                             0.467E+13   0.00    0.000E+00
+! REV/ ? /                                                                 !k*- = 0.5*k original- 
+!NOO*O*+OH=NO2+HO*2                             0.467E+13   0.00    0.000E+00
+! REV/ ? /                                                                 !k*- = 0.5*k original-
+!
+!!three   !P*+ = 1/2 = P*-
+!NO*3+OH=NOO*+HO*2                              0.70E+13    0.00    0.000E+00
+!NO*3+OH=NO*2+HOO*                              0.70E+13    0.00    0.000E+00
+!NOO*O*+O*H=NOO*+HO*2                           0.70E+13    0.00    0.000E+00
+!NOO*O*+O*H=NO*2+HOO*                           0.70E+13    0.00    0.000E+00
+!
+!!four
+!NO*3+O*H=NO*2+HO*2                             1.40E+13    0.00    0.000E+00
+!
+!O3+HO2=NO2+O2+OH                               1.50E+12    0.00    0.000E+00 ! Mendiara and Glarborg 2009
+!!one P*+ = 1/3,P*- = 1/2,!k*- = 0.5*k original-
+!NOOO*+HO2=NOO*+O2+OH                           0.50E+12    0.00    0.000E+00
+! REV/?/
+!NOOO*+HO2=NO2+OO*+OH                           0.50E+12    0.00    0.000E+00
+! REV/?/
+!NOOO*+HO2=NO2+O2+O*H                           0.50E+12    0.00    0.000E+00
+! REV/?/
+!
+!NO3+HOO*=NOO*+O2+OH                            0.50E+12    0.00    0.000E+00
+! REV/?/
+!NO3+HOO*=NO2+OO*+OH                            0.50E+12    0.00    0.000E+00
+! REV/?/
+!NO3+HOO*=NO2+O2+O*H                            0.50E+12    0.00    0.000E+00
+! REV/?/
+!
+!!two  P*+ = 1/5,P*- = 1/3,!k*- = 0.3333*k original-
+!!(TWO_1)
+!NOOO*+HOO*=NO*2+O2+OH                           0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOOO*+HOO*=NO2+O*2+OH                           0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOOO*+HOO*=NOO*+OO*+OH                          0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOOO*+HOO*=NOO*+O2+O*H                          0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOOO*+HOO*=NO2+OO*+O*H                          0.30E+12    0.00    0.000E+00
+! REV/?/
+!
+!!(TWO_2)
+!NOO*O*+HO2=NO*2+O2+OH                           0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOO*O*+HO2=NO2+O*2+OH                           0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOO*O*+HO2=NOO*+OO*+OH                          0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOO*O*+HO2=NOO*+O2+O*H                          0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOO*O*+HO2=NO2+OO*+O*H                          0.30E+12    0.00    0.000E+00
+! REV/?/
+!
+!!(TWO_3)
+!NO3+HO*2=NO*2+O2+OH                             0.30E+12    0.00    0.000E+00
+! REV/?/
+!NO3+HO*2=NO2+O*2+OH                             0.30E+12    0.00    0.000E+00
+! REV/?/                                         
+!NO3+HO*2=NOO*+OO*+OH                            0.30E+12    0.00    0.000E+00
+! REV/?/                                         
+!NO3+HO*2=NOO*+O2+O*H                            0.30E+12    0.00    0.000E+00
+! REV/?/                                         
+!NO3+HO*2=NO2+OO*+O*H                            0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!  
+!!three  P*+ = 1/5,P*- = 1/3,!k*- = 0.3333*k original-
+!!(three_1)
+!NOOO*+HO*2=NO*2+OO*+OH                          0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOOO*+HO*2=NO*2+O2+O*H                          0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOOO*+HO*2=NO2+O*2+O*H                          0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOOO*+HO*2=NOO*+O*2+OH                          0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOOO*+HO*2=NOO*+OO*+O*H                         0.30E+12    0.00    0.000E+00
+! REV/?/
+!
+!!(three_2)
+!NOO*O*+HOO*=NO*2+OO*+OH                         0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOO*O*+HOO*=NO*2+O2+O*H                         0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOO*O*+HOO*=NO2+O*2+O*H                         0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!NOO*O*+HOO*=NOO*+O*2+OH                         0.30E+12    0.00    0.000E+00
+! REV/?/
+!NOO*O*+HOO*=NOO*+OO*+O*H                        0.30E+12    0.00    0.000E+00
+! REV/?/
+!
+!!(three_3)
+!NO*3+HO2=NO*2+OO*+OH                            0.30E+12    0.00    0.000E+00
+! REV/?/
+!NO*3+HO2=NO*2+O2+O*H                            0.30E+12    0.00    0.000E+00
+! REV/?/                                         
+!NO*3+HO2=NO2+O*2+O*H                            0.30E+12    0.00    0.000E+00
+! REV/?/                                         
+!NO*3+HO2=NOO*+O*2+OH                            0.30E+12    0.00    0.000E+00
+! REV/?/                                         
+!NO*3+HO2=NOO*+OO*+O*H                           0.30E+12    0.00    0.000E+00
+! REV/?/ 
+!  
+!!four  P*+ = 1/3,P*- = 1/2,!k*- = 0.5*k original-
+!NOO*O*+HO*2=NOO*+O*2+O*H                        0.50E+12    0.00    0.000E+00
+! REV/?/
+!NOO*O*+HO*2=NO*2+OO*+O*H                        0.50E+12    0.00    0.000E+00
+! REV/?/
+!NOO*O*+HO*2=NO*2+O*2+OH                         0.50E+12    0.00    0.000E+00
+! REV/?/
+!
+!NO*3+HOO*=NOO*+O*2+O*H                          0.50E+12    0.00    0.000E+00
+! REV/?/
+!NO*3+HOO*=NO*2+OO*+O*H                          0.50E+12    0.00    0.000E+00
+! REV/?/
+!NO*3+HOO*=NO*2+O*2+OH                           0.50E+12    0.00    0.000E+00
+! REV/?/
+!
+!!five
+!NO*3+HO*2=NO*2+O*2+O*H                          1.50E+12    0.00    0.000E+00 
+!
+!NO3+NO2=NO+NO2+O2                               5.00E+10    0.00    2.940E+03 ! Mendiara and Glarborg 2009
+!O3+NO2=NO2+O2+NO                                5.00E+10    0.00    2.940E+03 ! Mendiara and Glarborg 2009
+!!one P*+ = 1/3,P*- = 1/2,!k*- = 0.5*k original-
+!NOOO*+NO2=NOO*+O2+NO                            1.666E+10   0.00    2.940E+03
+! REV/?/                                         
+!NOOO*+NO2=NO2+OO*+NO                            1.666E+10   0.00    2.940E+03
+! REV/?/                                         
+!NOOO*+NO2=NO2+O2+NO*                            1.666E+10   0.00    2.940E+03
+! REV/?/                                         
+!												 
+!NO3+NOO*=NOO*+O2+NO                             1.666E+10   0.00    2.940E+03
+! REV/?/                                         
+!NO3+NOO*=NO2+OO*+NO                             1.666E+10   0.00    2.940E+03
+! REV/?/                                         
+!NO3+NOO*=NO2+O2+NO*                             1.666E+10   0.00    2.940E+03
+! REV/?/
+!
+!!two  P*+ = 1/5,P*- = 1/3,!k*- = 0.3333*k original-
+!!(TWO_1)
+!NOOO*+NOO*=NO*2+O2+NO                           1.00E+10    0.00    2.940E+03 
+! REV/?/
+!NOOO*+NOO*=NO2+O*2+NO                           1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!NOOO*+NOO*=NOO*+OO*+NO                          1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!NOOO*+NOO*=NOO*+O2+NO*                          1.00E+10    0.00    2.940E+03 
+! REV/?/
+!NOOO*+NOO*=NO2+OO*+NO*                          1.00E+10    0.00    2.940E+03 
+! REV/?/
+!
+!!(TWO_2) NOO*O*+NO2
+!NOO*O*+NO2=NO*2+O2+NO                           1.00E+10    0.00    2.940E+03 
+! REV/?/
+!NOO*O*+NO2=NO2+O*2+NO                           1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!NOO*O*+NO2=NOO*+OO*+NO                          1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!NOO*O*+NO2=NOO*+O2+NO*                          1.00E+10    0.00    2.940E+03 
+! REV/?/
+!NOO*O*+NO2=NO2+OO*+NO*                          1.00E+10    0.00    2.940E+03 
+! REV/?/
+!
+!!(TWO_3) NO3+NO*2
+!NO3+NO*2=NO*2+O2+NO                             1.00E+10    0.00    2.940E+03 
+! REV/?/                                         
+!NO3+NO*2=NO2+O*2+NO                             1.00E+10    0.00    2.940E+03 
+! REV/?/                                         
+!NO3+NO*2=NOO*+OO*+NO                            1.00E+10    0.00    2.940E+03 
+! REV/?/                                         
+!NO3+NO*2=NOO*+O2+NO*                            1.00E+10    0.00    2.940E+03 
+! REV/?/                                         
+!NO3+NO*2=NO2+OO*+NO*                            1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!
+!
+!!three  P*+ = 1/5,P*- = 1/3,!k*- = 0.3333*k original-
+!!(three_1)
+!NOOO*+NO*2=NO*2+OO*+NO                          1.00E+10    0.00    2.940E+03 
+! REV/?/
+!NOOO*+NO*2=NO*2+O2+NO*                          1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!NOOO*+NO*2=NO2+O*2+NO*                          1.00E+10    0.00    2.940E+03 
+! REV/?/ 
+!NOOO*+NO*2=NOO*+O*2+NO                          1.00E+10    0.00    2.940E+03 
+! REV/?/
+!NOOO*+NO*2=NOO*+OO*+NO*                         1.00E+10    0.00    2.940E+03
+! REV/?/
+!
+!!(three_2) NOO*O*+NOO*
+!NOO*O*+NOO*=NO*2+OO*+NO                         1.000E+10   0.00    2.940E+03
+! REV/?/
+!NOO*O*+NOO*=NO*2+O2+NO*                         1.000E+10   0.00    2.940E+03
+! REV/?/ 
+!NOO*O*+NOO*=NO2+O*2+NO*                         1.000E+10   0.00    2.940E+03
+! REV/?/ 
+!NOO*O*+NOO*=NOO*+O*2+NO                         1.000E+10   0.00    2.940E+03
+! REV/?/
+!NOO*O*+NOO*=NOO*+OO*+NO*                        1.000E+10   0.00    2.940E+03
+! REV/?/
+!
+!!(three_3) NO*3+NO2
+!NO*3+NO2=NO*2+OO*+NO                            1.000E+10   0.00    2.940E+03
+! REV/?/                                         
+!NO*3+NO2=NO*2+O2+NO*                            1.000E+10   0.00    2.940E+03
+! REV/?/                                         
+!NO*3+NO2=NO2+O*2+NO*                            1.000E+10   0.00    2.940E+03
+! REV/?/                                         
+!NO*3+NO2=NOO*+O*2+NO                            1.000E+10   0.00    2.940E+03
+! REV/?/                                         
+!NO*3+NO2=NOO*+OO*+NO*                           1.000E+10   0.00    2.940E+03
+! REV/?/
+!
+!!four  P*+ = 1/3,P*- = 1/2,!k*- = 0.5*k original-
+!NOO*O*+NO*2=NOO*+O*2+NO*                        1.666E+10   0.00    2.940E+03
+! REV/?/
+!NOO*O*+NO*2=NO*2+OO*+NO*                        1.666E+10   0.00    2.940E+03
+! REV/?/
+!NOO*O*+NO*2=NO*2+O*2+NO                         1.666E+10   0.00    2.940E+03
+! REV/?/
+!
+!NO*3+NOO*=NOO*+O*2+NO*                          1.666E+10   0.00    2.940E+03
+! REV/?/
+!NO*3+NOO*=NO*2+OO*+NO*                          1.666E+10   0.00    2.940E+03
+! REV/?/
+!NO*3+NOO*=NO*2+O*2+NO                           1.666E+10   0.00    2.940E+03
+! REV/?/
+!
+!!five
+!NO*3+NO*2=NO*2+O*2+NO*                          5.00E+10    0.00    2.940E+03     
+!
+!O3+NO3=NO2+NO2+O2                              5.12E+11    0.00    4.870E+03 ! Coppens 2007
+!!产物与反应物都有相同的
+!!one  P*+ = 1/2,P*- = 1,!k*- = k original-
+!NOOO*+NO3=NOO*+NO2+O2                          2.56E+11  0.00    4.870E+03
+!NOOO*+NO3=NO2+NO2+OO*                          2.56E+11  0.00    4.870E+03
+!
+!!two  P*+ = 1/4,P*- = 1/2,!k*- = 0.5*k original-
+!NOO*O*+NO3=NOO*+NOO*+O2                        1.28E+11  0.00    4.870E+03
+!NOO*O*+NO3=NOO*+NO2+OO*                        1.28E+11  0.00    4.870E+03
+!NOO*O*+NO3=NO*2+NO2+O2                         1.28E+11  0.00    4.870E+03
+!NOO*O*+NO3=NO2+NO2+O*2                         1.28E+11  0.00    4.870E+03
+!
+!NOOO*+NOOO*=NOO*+NOO*+O2                       1.28E+11  0.00    4.870E+03
+!NOOO*+NOOO*=NOO*+NO2+OO*                       1.28E+11  0.00    4.870E+03
+!NOOO*+NOOO*=NO*2+NO2+O2                        1.28E+11  0.00    4.870E+03
+!NOOO*+NOOO*=NO2+NO2+O*2                        1.28E+11  0.00    4.870E+03
+!
+!!three P*+ = 1/3,P*- = 1/2,!k*- = 0.5*k original-
+!NO*3+NO3=NO*2+NO2+OO*                          1.7067E+11 0.00   4.870E+03
+!NO*3+NO3=NOO*+NO2+O*2                          1.7067E+11 0.00   4.870E+03
+!NO*3+NO3=NOO*+NO*2+O2                          1.7067E+11 0.00   4.870E+03
+!
+!NOOO*+NOO*O*=NO*2+NO2+OO*                      1.7067E+11 0.00   4.870E+03
+!NOOO*+NOO*O*=NOO*+NO2+O*2                      1.7067E+11 0.00   4.870E+03
+!NOOO*+NOO*O*=NOO*+NO*2+O2                      1.7067E+11 0.00   4.870E+03
+!
+!!four P*+ = 1/3,P*- = 1/2,!k*- = 0.5*k original-
+!NO*3+NOOO*=NO*2+NO*2+O2                        1.7067E+11 0.00   4.870E+03
+!NO*3+NOOO*=NO*2+NO2+O*2                        1.7067E+11 0.00   4.870E+03
+!NO*3+NOOO*=NOO*+NOO*+O*2                       1.7067E+11 0.00   4.870E+03
+!
+!NOO*O*+NOO*O*=NO*2+NO*2+O2                     1.7067E+11 0.00   4.870E+03
+!NOO*O*+NOO*O*=NO*2+NO2+O*2                     1.7067E+11 0.00   4.870E+03
+!NOO*O*+NOO*O*=NOO*+NOO*+O*2                    1.7067E+11 0.00   4.870E+03
+!
+!!five P*+ = 1/2,P*- = 1,!k*- = k original-
+!NO*3+NOO*O*=NO*2+NO*2+OO*                      2.56E+11    0.00    4.870E+03
+!NO*3+NOO*O*=NOO*+NO*2+O*2                      2.56E+11    0.00    4.870E+03
+!
+!!six
+!NO*3+NO*3=NO*2+NO*2+O*2                        5.12E+11    0.00    4.870E+03 
+ 
+ 
+!----------- Chemiluminescence OH* MECHANISM ----------------------------------
+!化学荧光相关的先不改写
+H+O+M=OH*+M                                     1.500E+13    0.00   5.975E+03  ! T. Kathrotia  2010 
+H2/1.0/H2O/6.40/
+!CO2/1.50/
+O2/0.45/N2/0.40/AR/0.35/HE/0.35/
+!CO/0.75/CH4/3.0/      ! Griffith & Barnard
+OH*=OH                                          1.450E+06    0.00   0.000E+00  ! T.Kathrotia 2011 
+OH*+O2=OH+O2                                    2.100E+12    0.50  -4.824E+02  ! T.Kathrotia 2011 
+OH*+H2=OH+H2                                    2.950E+12    0.50  -4.543E+02  ! T.Kathrotia 2011 
+OH*+N2=OH+N2                                    1.080E+11    0.50  -1.243E+02  ! T.Kathrotia 2011 
+OH*+AR=OH+AR                                    1.690E+12    0.00   4.137E+03  ! T.Kathrotia 2011 
+OH*+H2O=OH+H2O                                  5.930E+12    0.50  -8.608E+02  ! T.Kathrotia 2011 
+OH*+OH=OH+OH                                    6.010E+12    0.50  -7.652E+02  ! T.Kathrotia 2011 
+OH*+H=OH+H                                      1.310E+12    0.50  -1.674E+02  ! T.Kathrotia 2011
+!!*********************Interactive reactions OF NH3 and syngas mechanism (Lamoureux 2016)****************************
+!C相关的先不改写
+!NO+   HCO       =    HNO +   CO        7.200E+13   0.0        0.0  !
+!NO2+  HCO      =     CO +   NO +  OH   0.945E+13   0.0     -430.0   !
+!NO2+  HCO      =      H +  CO2 +  NO   0.555E+13   0.0     -430.0   !
+!NO2+   CO      =     NO +  CO2         2.190E+13   0.00   29200.0   !
+!N2O+   CO      =     N2 +  CO2         2.700E+11   0.00   20237.0   !
+!CO2+    N      =     CO +   NO         1.900E+11   0.00    3400.0   !
+
+END
+
+
+
+

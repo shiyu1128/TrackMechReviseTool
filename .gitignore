@@ -12,6 +12,7 @@
 
 # Document rendering and other temporary output
 _docx_review/
+.rebase-preserve/
 
 # Generated review and rewrite-plan exports
 review_*.csv

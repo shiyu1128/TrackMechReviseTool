@@ -3,6 +3,9 @@ namespace TrackMechReviseTool.Core;
 public sealed record ReactionRewritePlanRow(
     int SourceReactionIndex,
     string SourceEquation,
+    double SourceA,
+    double SourceN,
+    double SourceE,
     int CandidateIndex,
     int MarkedAtomCount,
     string CandidateEquation,
@@ -99,6 +102,9 @@ public sealed class ReactionRewritePlanService
             rows.Add(new ReactionRewritePlanRow(
                 reaction.Index,
                 reaction.Equation,
+                reaction.Rate.A,
+                reaction.Rate.B,
+                reaction.Rate.Ea,
                 index + 1,
                 candidate.MarkedAtomCount,
                 candidate.Equation,

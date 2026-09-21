@@ -1,5 +1,10 @@
 using TrackMechReviseTool.Core;
 
+if (args.Length > 0 && string.Equals(args[0], "validate-plan", StringComparison.OrdinalIgnoreCase))
+{
+    return ValidatePlan(args);
+}
+
 var path = args.Length > 0 ? args[0] : "MODIFY-18_gas.out";
 var element = args.Length > 1 ? args[1] : "O";
 var reviewCsvPath = args.Length > 2 ? args[2] : string.Empty;
@@ -94,3 +99,57 @@ if (!string.IsNullOrWhiteSpace(rewritePlanCsvPath))
 }
 
 return 0;
+
+static int ValidatePlan(string[] arguments)
+{
+    if (arguments.Length < 2)
+    {
+        Console.Error.WriteLine("Usage: validate-plan <rewrite-plan.csv> [normalized-plan.csv]");
+        return 2;
+    }
+
+    var planPath = arguments[1];
+    if (!File.Exists(planPath))
+    {
+        Console.Error.WriteLine($"File not found: {planPath}");
+        return 2;
+    }
+
+    try
+    {
+        var rows = new ReactionRewritePlanCsvReader().Read(planPath);
+        var result = new ReactionRewritePlanValidator().Validate(rows);
+        var errors = result.Issues.Count(issue => issue.Severity == PlanValidationSeverity.Error);
+        var warnings = result.Issues.Count(issue => issue.Severity == PlanValidationSeverity.Warning);
+
+        Console.WriteLine("TrackMechReviseTool rewrite plan validation");
+        Console.WriteLine($"Input: {Path.GetFullPath(planPath)}");
+        Console.WriteLine($"Rows: {result.NormalizedRows.Count}");
+        Console.WriteLine($"Selected rows: {result.NormalizedRows.Count(row => row.Selected)}");
+        Console.WriteLine($"Ready rows: {result.NormalizedRows.Count(row => row.PlanStatus == "Ready")}");
+        Console.WriteLine($"Errors: {errors}");
+        Console.WriteLine($"Warnings: {warnings}");
+
+        foreach (var issue in result.Issues.Take(30))
+        {
+            Console.WriteLine($"  {issue.Severity,-7} {issue.Code,-30} RXN {issue.SourceReactionIndex} {issue.Location}: {issue.Message}");
+        }
+        if (result.Issues.Count > 30)
+        {
+            Console.WriteLine($"  ... {result.Issues.Count - 30} additional issues");
+        }
+
+        if (arguments.Length > 2 && !string.IsNullOrWhiteSpace(arguments[2]))
+        {
+            CsvWriter.WriteReactionRewritePlan(arguments[2], result.NormalizedRows);
+            Console.WriteLine($"Normalized plan written: {Path.GetFullPath(arguments[2])}");
+        }
+
+        return result.IsValid ? 0 : 1;
+    }
+    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or FormatException)
+    {
+        Console.Error.WriteLine($"Plan validation failed: {exception.Message}");
+        return 2;
+    }
+}

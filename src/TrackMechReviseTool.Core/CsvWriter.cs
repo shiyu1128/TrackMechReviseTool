@@ -45,12 +45,15 @@ public static class CsvWriter
     public static void WriteReactionRewritePlan(string path, IEnumerable<ReactionRewritePlanRow> rows)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("SourceReactionIndex,SourceEquation,CandidateIndex,MarkedAtomCount,CandidateEquation,Selected,SelectionMode,ForwardBranchGroup,ForwardBranchCount,gf,ForwardProbability,ForwardRateMultiplier,ForwardA,ForwardN,ForwardE,ReverseBranchGroup,ReverseBranchCount,gr,ReverseProbability,ReverseRateMultiplier,ExplicitRevRequirement,RevA,RevN,RevE,CopyLOW,CopyTROE,CopyColliderEfficiencies,Duplicate,PlanStatus,ValidationMessage");
+        builder.AppendLine("SourceReactionIndex,SourceEquation,SourceA,SourceN,SourceE,CandidateIndex,MarkedAtomCount,CandidateEquation,Selected,SelectionMode,ForwardBranchGroup,ForwardBranchCount,gf,ForwardProbability,ForwardRateMultiplier,ForwardA,ForwardN,ForwardE,ReverseBranchGroup,ReverseBranchCount,gr,ReverseProbability,ReverseRateMultiplier,ExplicitRevRequirement,RevA,RevN,RevE,CopyLOW,CopyTROE,CopyColliderEfficiencies,Duplicate,PlanStatus,ValidationMessage");
 
         foreach (var row in rows)
         {
             builder.Append(row.SourceReactionIndex.ToString(CultureInfo.InvariantCulture)).Append(',');
             builder.Append(Escape(row.SourceEquation)).Append(',');
+            builder.Append(row.SourceA.ToString("G17", CultureInfo.InvariantCulture)).Append(',');
+            builder.Append(row.SourceN.ToString("G17", CultureInfo.InvariantCulture)).Append(',');
+            builder.Append(row.SourceE.ToString("G17", CultureInfo.InvariantCulture)).Append(',');
             builder.Append(row.CandidateIndex.ToString(CultureInfo.InvariantCulture)).Append(',');
             builder.Append(row.MarkedAtomCount.ToString(CultureInfo.InvariantCulture)).Append(',');
             builder.Append(Escape(row.CandidateEquation)).Append(',');

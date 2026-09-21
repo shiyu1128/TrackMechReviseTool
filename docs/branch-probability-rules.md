@@ -104,3 +104,25 @@
 | `BlockedMissingSpeciesRules` | 涉及尚未定义标记形式的物种，不能继续写出 |
 
 LOW、TROE、三体增强系数和 DUPLICATE 分别通过 `CopyLOW`、`CopyTROE`、`CopyColliderEfficiencies` 和 `Duplicate` 字段传递给后续机理写出器。
+
+## Rewrite plan 回读与校验
+
+使用以下命令读取用户编辑后的计划，并输出重新计算过的标准化计划：
+
+```powershell
+dotnet run --project src/TrackMechReviseTool.Cli --no-build -- validate-plan rewrite_plan_O.csv rewrite_plan_O_normalized.csv
+```
+
+校验器不信任 CSV 中已有的派生数值，而是按 `SourceA * gf * ForwardProbability` 重新计算 `ForwardRateMultiplier` 和 `ForwardA`。当正向与逆向总倍率不同时，会重新标记 `REV_REQUIRED`。
+
+以下情况会阻止写出最终机理：
+
+- 任一完整的 `ForwardBranchGroup` 没有选择允许分支。
+- 已选择分支缺少正向或逆向概率。
+- 同一正向或逆向分支组的概率和不等于 1。
+- 概率超出 0 到 1，或参数不是有限数值。
+- 正逆倍率不同但 `RevA`、`RevN`、`RevE` 任一为空。
+- 反应涉及尚未定义标记形式的物种。
+- 同一原反应内出现重复的候选编号。
+
+验证成功时命令退出码为 0；存在规则错误时退出码为 1；CSV 格式或文件访问错误时退出码为 2。只有验证成功的标准化计划才能交给后续 `.inp` 反应段写出器。

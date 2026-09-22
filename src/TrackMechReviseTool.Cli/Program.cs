@@ -4,6 +4,10 @@ if (args.Length > 0 && string.Equals(args[0], "validate-plan", StringComparison.
 {
     return ValidatePlan(args);
 }
+if (args.Length > 0 && string.Equals(args[0], "write-reactions", StringComparison.OrdinalIgnoreCase))
+{
+    return WriteReactions(args);
+}
 
 var path = args.Length > 0 ? args[0] : "MODIFY-18_gas.out";
 var element = args.Length > 1 ? args[1] : "O";
@@ -150,6 +154,59 @@ static int ValidatePlan(string[] arguments)
     catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or FormatException)
     {
         Console.Error.WriteLine($"Plan validation failed: {exception.Message}");
+        return 2;
+    }
+}
+
+static int WriteReactions(string[] arguments)
+{
+    if (arguments.Length < 4)
+    {
+        Console.Error.WriteLine("Usage: write-reactions <mechanism.out> <rewrite-plan.csv> <output-reactions.inp>");
+        return 2;
+    }
+
+    var outPath = arguments[1];
+    var planPath = arguments[2];
+    var outputPath = arguments[3];
+    if (!File.Exists(outPath) || !File.Exists(planPath))
+    {
+        Console.Error.WriteLine(!File.Exists(outPath)
+            ? $"File not found: {outPath}"
+            : $"File not found: {planPath}");
+        return 2;
+    }
+
+    try
+    {
+        var mechanism = new OutMechanismParser().Parse(outPath);
+        var rows = new ReactionRewritePlanCsvReader().Read(planPath);
+        var validationResult = new ReactionRewritePlanValidator().Validate(rows);
+        if (!validationResult.IsValid)
+        {
+            Console.Error.WriteLine("Reaction output blocked because the rewrite plan contains validation errors.");
+            foreach (var issue in validationResult.Issues
+                         .Where(issue => issue.Severity == PlanValidationSeverity.Error)
+                         .Take(30))
+            {
+                Console.Error.WriteLine(
+                    $"  {issue.Code,-30} RXN {issue.SourceReactionIndex} {issue.Location}: {issue.Message}");
+            }
+            return 1;
+        }
+
+        new ChemkinReactionSectionWriter().Write(outputPath, mechanism, validationResult);
+        Console.WriteLine("TrackMechReviseTool Chemkin reaction writer");
+        Console.WriteLine($"Input .out: {Path.GetFullPath(outPath)}");
+        Console.WriteLine($"Plan: {Path.GetFullPath(planPath)}");
+        Console.WriteLine($"Written reactions: {validationResult.NormalizedRows.Count(row => row.Selected)}");
+        Console.WriteLine($"Manual REV lines: {validationResult.NormalizedRows.Count(row => row.Selected && row.ExplicitRevRequirement == "REV_REQUIRED")}");
+        Console.WriteLine($"Output: {Path.GetFullPath(outputPath)}");
+        return 0;
+    }
+    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or FormatException or InvalidOperationException)
+    {
+        Console.Error.WriteLine($"Reaction writing failed: {exception.Message}");
         return 2;
     }
 }

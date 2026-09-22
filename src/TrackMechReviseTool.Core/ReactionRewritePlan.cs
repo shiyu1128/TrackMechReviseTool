@@ -33,7 +33,18 @@ public sealed record ReactionRewritePlanRow(
     bool CopyColliderEfficiencies,
     bool IsDuplicate,
     string PlanStatus,
-    string ValidationMessage);
+    string ValidationMessage)
+{
+    public string RevWritePosition =>
+        string.Equals(ExplicitRevRequirement, "REV_REQUIRED", StringComparison.Ordinal)
+            ? "ImmediatelyAfterReactionRateLine"
+            : string.Empty;
+
+    public string RevInputPrompt =>
+        string.Equals(ExplicitRevRequirement, "REV_REQUIRED", StringComparison.Ordinal)
+            ? "Manual input required: enter reverse Arrhenius A, n and E; output as REV / A n E / immediately after this reaction"
+            : string.Empty;
+}
 
 public sealed class ReactionRewritePlanService
 {
@@ -213,7 +224,7 @@ public sealed class ReactionRewritePlanService
             "BlockedMissingSpeciesRules" => $"Add trace rules for: {string.Join(", ", missingSpeciesRules)}",
             "NeedsSelection" => "Select allowed atom mappings, then enter branch probabilities",
             "NeedsProbabilities" => "Enter forward and reverse probabilities; each branch group must sum to 1",
-            "NeedsRevParameters" => "Forward and reverse multipliers differ; enter REV A, n, E",
+            "NeedsRevParameters" => "Manual input required: enter reverse Arrhenius RevA, RevN and RevE; REV is written immediately after this reaction",
             "Ready" => "Ready to write",
             _ => string.Empty
         };

@@ -45,7 +45,7 @@ public static class CsvWriter
     public static void WriteReactionRewritePlan(string path, IEnumerable<ReactionRewritePlanRow> rows)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("SourceReactionIndex,SourceEquation,SourceA,SourceN,SourceE,CandidateIndex,MarkedAtomCount,CandidateEquation,Selected,SelectionMode,ForwardBranchGroup,ForwardBranchCount,gf,ForwardProbability,ForwardRateMultiplier,ForwardA,ForwardN,ForwardE,ReverseBranchGroup,ReverseBranchCount,gr,ReverseProbability,ReverseRateMultiplier,ExplicitRevRequirement,RevA,RevN,RevE,CopyLOW,CopyTROE,CopyColliderEfficiencies,Duplicate,PlanStatus,ValidationMessage");
+        builder.AppendLine("SourceReactionIndex,SourceEquation,SourceA,SourceN,SourceE,CandidateIndex,MarkedAtomCount,CandidateEquation,Selected,SelectionMode,ForwardBranchGroup,ForwardBranchCount,gf,ForwardProbability,ForwardRateMultiplier,ForwardA,ForwardN,ForwardE,ReverseBranchGroup,ReverseBranchCount,gr,ReverseProbability,ReverseRateMultiplier,ExplicitRevRequirement,RevWritePosition,RevInputPrompt,RevA,RevN,RevE,CopyLOW,CopyTROE,CopyColliderEfficiencies,Duplicate,PlanStatus,ValidationMessage");
 
         foreach (var row in rows)
         {
@@ -73,6 +73,8 @@ public static class CsvWriter
             builder.Append(NullableDouble(row.ReverseProbability)).Append(',');
             builder.Append(NullableDouble(row.ReverseRateMultiplier)).Append(',');
             builder.Append(Escape(row.ExplicitRevRequirement)).Append(',');
+            builder.Append(Escape(row.RevWritePosition)).Append(',');
+            builder.Append(Escape(row.RevInputPrompt)).Append(',');
             builder.Append(NullableDouble(row.RevA)).Append(',');
             builder.Append(NullableDouble(row.RevN)).Append(',');
             builder.Append(NullableDouble(row.RevE)).Append(',');

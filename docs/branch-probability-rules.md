@@ -91,6 +91,19 @@
 
 `rewrite_plan_O.csv` 将每条候选标记反应单独列出，用作后续界面表格的数据源。用户可编辑的核心字段是 `Selected`、`ForwardProbability`、`ReverseProbability`、`RevA`、`RevN` 和 `RevE`。其余倍率、分组和附属反应标志由程序生成。
 
+### REV 人工输入与写入位置
+
+当 `ExplicitRevRequirement=REV_REQUIRED` 时，界面必须在对应候选反应行显示醒目提示，并提供三个独立的人工输入框：`RevA`（逆反应指前因子）、`RevN`（逆反应温度指数）和 `RevE`（逆反应活化能）。程序不自动猜测、拟合或用正向参数代替这三个值；三项任一为空时，该反应保持 `NeedsRevParameters` 状态并禁止写出最终机理。
+
+`REV` 的固定写入位置是对应标记反应主 Arrhenius 行的下一行，格式为：
+
+```text
+O+O*+HE=OO*+HE       3.78E+13  0.0  -1788.0
+    REV / 6.563E+14 -0.055 116888.8 /
+```
+
+如反应还包含 `LOW`、`TROE`、三体增强系数或 `DUPLICATE`，这些附属行写在 `REV` 行之后。审核计划中的只读字段 `RevWritePosition=ImmediatelyAfterReactionRateLine` 用于固定该位置，`RevInputPrompt` 用于向用户说明必须人工输入逆反应 A、n、E 三参数。
+
 同一个 `ForwardBranchGroup` 内所有已选择行的 `ForwardProbability` 必须合计为 1；同一个 `ReverseBranchGroup` 内所有已选择行的 `ReverseProbability` 必须合计为 1。程序按 `ForwardA = A_out * gf * ForwardProbability` 计算正向 A。
 
 计划状态含义：
@@ -126,3 +139,9 @@ dotnet run --project src/TrackMechReviseTool.Cli --no-build -- validate-plan rew
 - 同一原反应内出现重复的候选编号。
 
 验证成功时命令退出码为 0；存在规则错误时退出码为 1；CSV 格式或文件访问错误时退出码为 2。只有验证成功的标准化计划才能交给后续 `.inp` 反应段写出器。
+
+验证通过后，可使用以下命令生成 Chemkin 标记反应段预览：
+
+```powershell
+dotnet run --project src/TrackMechReviseTool.Cli --no-build -- write-reactions MODIFY-18_gas.out rewrite_plan_O_normalized.csv marked_reactions_O.inp
+```

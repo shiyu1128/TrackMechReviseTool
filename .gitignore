@@ -17,6 +17,7 @@ _docx_review/
 # Generated review and rewrite-plan exports
 review_*.csv
 rewrite_plan_*.csv
+marked_reactions_*.inp
 
 # Published installers and packaged output
 publish/

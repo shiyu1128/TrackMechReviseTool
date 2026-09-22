@@ -407,7 +407,7 @@ public sealed class ReactionRewritePlanValidator
                     "REV_PARAMETERS_MISSING",
                     row.SourceReactionIndex,
                     $"candidate {row.CandidateIndex}",
-                    "Forward and reverse multipliers differ; REV A, n and E are required."));
+                    "Manual input required: enter reverse Arrhenius RevA, RevN and RevE. REV / A n E / will be written immediately after this reaction."));
             }
 
             if (new[] { row.RevA, row.RevN, row.RevE }
@@ -470,7 +470,7 @@ public sealed class ReactionRewritePlanValidator
             "BlockedMissingSpeciesRules" => "Add the missing marked-species definitions before writing",
             "Excluded" => "Candidate is not selected",
             "NeedsProbabilities" => "Enter forward and reverse probabilities",
-            "NeedsRevParameters" => "Enter REV A, n and E",
+            "NeedsRevParameters" => "Manual input required: enter reverse Arrhenius RevA, RevN and RevE; REV is written immediately after this reaction",
             "Ready" => "Ready to write",
             _ => string.Empty
         };

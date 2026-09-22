@@ -12,6 +12,10 @@ if (args.Length > 0 && string.Equals(args[0], "write-mechanism", StringCompariso
 {
     return WriteMechanism(args);
 }
+if (args.Length > 0 && string.Equals(args[0], "write-thermo", StringComparison.OrdinalIgnoreCase))
+{
+    return WriteThermo(args);
+}
 
 var path = args.Length > 0 ? args[0] : "MODIFY-18_gas.out";
 var element = args.Length > 1 ? args[1] : "O";
@@ -266,6 +270,76 @@ static int WriteMechanism(string[] arguments)
     catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or FormatException or InvalidOperationException)
     {
         Console.Error.WriteLine($"Mechanism writing failed: {exception.Message}");
+        return 2;
+    }
+}
+
+static int WriteThermo(string[] arguments)
+{
+    if (arguments.Length < 6)
+    {
+        Console.Error.WriteLine("Usage: write-thermo <thermo.dat> <mechanism.out> <rewrite-plan.csv> <element> <output-thermo.dat>");
+        return 2;
+    }
+
+    var thermoPath = arguments[1];
+    var outPath = arguments[2];
+    var planPath = arguments[3];
+    var element = arguments[4];
+    var outputPath = arguments[5];
+    foreach (var inputPath in new[] { thermoPath, outPath, planPath })
+    {
+        if (!File.Exists(inputPath))
+        {
+            Console.Error.WriteLine($"File not found: {inputPath}");
+            return 2;
+        }
+    }
+
+    try
+    {
+        var thermo = new ThermoFileParser().Parse(thermoPath);
+        var mechanism = new OutMechanismParser().Parse(outPath);
+        if (!mechanism.MarkableElements().Contains(element, StringComparer.OrdinalIgnoreCase))
+        {
+            Console.Error.WriteLine($"Element '{element}' is not markable in the parsed .out mechanism.");
+            return 2;
+        }
+
+        var rows = new ReactionRewritePlanCsvReader().Read(planPath);
+        var validationResult = new ReactionRewritePlanValidator().Validate(rows);
+        if (!validationResult.IsValid)
+        {
+            Console.Error.WriteLine("Thermodynamic output blocked because the rewrite plan contains validation errors.");
+            foreach (var issue in validationResult.Issues
+                         .Where(issue => issue.Severity == PlanValidationSeverity.Error)
+                         .Take(30))
+            {
+                Console.Error.WriteLine(
+                    $"  {issue.Code,-30} RXN {issue.SourceReactionIndex} {issue.Location}: {issue.Message}");
+            }
+            return 1;
+        }
+
+        var result = new MarkedThermoWriter().Write(
+            outputPath,
+            thermo,
+            mechanism,
+            validationResult,
+            element);
+        Console.WriteLine("TrackMechReviseTool marked thermodynamic writer");
+        Console.WriteLine($"Input thermo: {Path.GetFullPath(thermoPath)}");
+        Console.WriteLine($"Input .out: {Path.GetFullPath(outPath)}");
+        Console.WriteLine($"Selected element: {element}");
+        Console.WriteLine($"Source thermo entries: {result.SourceEntryCount}");
+        Console.WriteLine($"Added thermo entries: {result.AddedSpecies.Count}");
+        Console.WriteLine($"Added species: {string.Join(", ", result.AddedSpecies)}");
+        Console.WriteLine($"Output: {Path.GetFullPath(outputPath)}");
+        return 0;
+    }
+    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or FormatException or InvalidOperationException)
+    {
+        Console.Error.WriteLine($"Thermodynamic writing failed: {exception.Message}");
         return 2;
     }
 }

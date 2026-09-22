@@ -19,6 +19,7 @@ review_*.csv
 rewrite_plan_*.csv
 marked_reactions_*.inp
 generated_mechanism_*.inp
+generated_thermo_*.dat
 
 # Published installers and packaged output
 publish/

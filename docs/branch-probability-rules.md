@@ -157,3 +157,13 @@ dotnet run --project src/TrackMechReviseTool.Cli --no-build -- write-mechanism M
 ```
 
 写出前会重新校验计划，并核对计划中的原反应编号、方程式及原始 A、n、E 是否与当前 `.out` 匹配。任何计划错误、缺少 `REV` 参数或来源不匹配都会阻止生成完整机理。当前阶段生成的是以 `.out` 重建的完整动力学 `.inp`；标记物种的热力学 `.dat` 和输运数据扩展将在后续阶段单独生成并交叉校验。
+
+## 标记物种热力学文件
+
+热力学写出器读取标准四行 NASA 多项式条目，并保留输入 `.dat` 中原有内容。程序从已确认的标记反应汇总新增物种，再按元素示踪规则查找母体物种；新增标记物种继承母体物种全部 NASA 系数、温区和元素组成，仅替换首行前 18 列的物种名。例如 `O*` 继承 `O`，`OO*` 和 `O*2` 均继承 `O2`。标记符号 `*` 属于物种名，不新增化学元素，因此元素组成仍使用原元素 O 及原原子数。
+
+```powershell
+dotnet run --project src/TrackMechReviseTool.Cli --no-build -- write-thermo Zou_2023-mmc3.dat MODIFY-18_gas.out rewrite_plan_O_normalized.csv O generated_thermo_O.dat
+```
+
+若输出物种已在源热力学文件中定义，程序不会重复添加；若源 `.dat` 未覆盖 `.out` 中的任一原物种、新增物种缺少示踪映射、母体 NASA 条目缺失、存在重复活动条目，或者计划校验失败，则停止输出。该策略确保热力学系数与母体完全一致，同时避免把注释条目误认为活动条目。

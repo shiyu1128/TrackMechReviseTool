@@ -145,3 +145,15 @@ dotnet run --project src/TrackMechReviseTool.Cli --no-build -- validate-plan rew
 ```powershell
 dotnet run --project src/TrackMechReviseTool.Cli --no-build -- write-reactions MODIFY-18_gas.out rewrite_plan_O_normalized.csv marked_reactions_O.inp
 ```
+
+## 从 .out 写出完整 Chemkin 机理
+
+完整机理写出继续以 `.out` 为结构和数值来源，不从参考 `.inp` 恢复更多有效数字。程序按 `.out` 顺序写出全部原元素、原物种和原反应，并在每条对应原反应之后插入审核计划中已选择且状态为 `Ready` 的标记反应。标记反应中出现、但原物种表中不存在的物种会自动追加到 `SPECIES` 段。
+
+完整输出包含 `ELEMENTS`、`SPECIES`、`REACTIONS` 和结尾 `END`。原反应的 `LOW`、`TROE`、三体增强系数及 `DUPLICATE` 从 `.out` 复制；标记反应按正向倍率同步缩放主反应和 `LOW` 的 A，并复制其余附属参数。需要显式逆向速率的标记反应仍将人工输入的 `REV / A n E /` 固定写在主反应行之后。
+
+```powershell
+dotnet run --project src/TrackMechReviseTool.Cli --no-build -- write-mechanism MODIFY-18_gas.out rewrite_plan_O_normalized.csv generated_mechanism_O.inp
+```
+
+写出前会重新校验计划，并核对计划中的原反应编号、方程式及原始 A、n、E 是否与当前 `.out` 匹配。任何计划错误、缺少 `REV` 参数或来源不匹配都会阻止生成完整机理。当前阶段生成的是以 `.out` 重建的完整动力学 `.inp`；标记物种的热力学 `.dat` 和输运数据扩展将在后续阶段单独生成并交叉校验。

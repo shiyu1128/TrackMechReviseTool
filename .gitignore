@@ -18,6 +18,7 @@ _docx_review/
 review_*.csv
 rewrite_plan_*.csv
 marked_reactions_*.inp
+generated_mechanism_*.inp
 
 # Published installers and packaged output
 publish/

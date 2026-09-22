@@ -10,11 +10,7 @@ public sealed class ChemkinReactionSectionWriter
         OutMechanism mechanism,
         ReactionRewritePlanValidationResult validationResult)
     {
-        if (!validationResult.IsValid)
-        {
-            throw new InvalidOperationException(
-                "The rewrite plan contains validation errors. Correct the plan before writing reactions.");
-        }
+        EnsurePlanCanBeWritten(validationResult);
 
         var reactionsByIndex = mechanism.Reactions.ToDictionary(reaction => reaction.Index);
         var selectedRows = validationResult.NormalizedRows
@@ -29,81 +25,137 @@ public sealed class ChemkinReactionSectionWriter
 
         foreach (var row in selectedRows)
         {
-            if (!string.Equals(row.PlanStatus, "Ready", StringComparison.Ordinal))
-            {
-                throw new InvalidOperationException(
-                    $"Reaction {row.SourceReactionIndex}, candidate {row.CandidateIndex} is not ready to write: {row.ValidationMessage}");
-            }
             if (!reactionsByIndex.TryGetValue(row.SourceReactionIndex, out var sourceReaction))
             {
                 throw new InvalidOperationException(
                     $"Source reaction {row.SourceReactionIndex} does not exist in the parsed .out mechanism.");
             }
-            if (!row.ForwardA.HasValue || !row.ForwardRateMultiplier.HasValue)
-            {
-                throw new InvalidOperationException(
-                    $"Reaction {row.SourceReactionIndex}, candidate {row.CandidateIndex} has no calculated forward rate.");
-            }
+            AppendMarkedReaction(builder, sourceReaction, row, includeSourceComment: true);
+        }
 
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(false));
+    }
+
+    internal static void EnsurePlanCanBeWritten(ReactionRewritePlanValidationResult validationResult)
+    {
+        if (!validationResult.IsValid)
+        {
+            throw new InvalidOperationException(
+                "The rewrite plan contains validation errors. Correct the plan before writing reactions.");
+        }
+
+        var unreadyRow = validationResult.NormalizedRows.FirstOrDefault(row =>
+            row.Selected && !string.Equals(row.PlanStatus, "Ready", StringComparison.Ordinal));
+        if (unreadyRow is not null)
+        {
+            throw new InvalidOperationException(
+                $"Reaction {unreadyRow.SourceReactionIndex}, candidate {unreadyRow.CandidateIndex} is not ready to write: {unreadyRow.ValidationMessage}");
+        }
+    }
+
+    internal static void AppendSourceReaction(StringBuilder builder, ReactionInfo reaction)
+    {
+        WriteRateLine(builder, reaction.Equation, reaction.Rate.A, reaction.Rate.B, reaction.Rate.Ea);
+        AppendAuxiliaryLines(
+            builder,
+            reaction,
+            lowPressureMultiplier: 1.0,
+            copyLow: reaction.LowPressureLimit.Count > 0,
+            copyTroe: reaction.TroeCentering.Count > 0,
+            copyColliderEfficiencies: reaction.ColliderEfficiencies.Count > 0,
+            isDuplicate: reaction.IsDuplicate);
+    }
+
+    internal static void AppendMarkedReaction(
+        StringBuilder builder,
+        ReactionInfo sourceReaction,
+        ReactionRewritePlanRow row,
+        bool includeSourceComment)
+    {
+        if (!row.ForwardA.HasValue || !row.ForwardRateMultiplier.HasValue)
+        {
+            throw new InvalidOperationException(
+                $"Reaction {row.SourceReactionIndex}, candidate {row.CandidateIndex} has no calculated forward rate.");
+        }
+
+        if (includeSourceComment)
+        {
             builder.Append("! Source reaction ")
                 .Append(row.SourceReactionIndex.ToString(CultureInfo.InvariantCulture))
                 .Append(": ")
                 .AppendLine(row.SourceEquation);
-            WriteRateLine(builder, row.CandidateEquation, row.ForwardA.Value, row.ForwardN, row.ForwardE);
+        }
 
-            if (string.Equals(row.ExplicitRevRequirement, "REV_REQUIRED", StringComparison.Ordinal))
+        WriteRateLine(builder, row.CandidateEquation, row.ForwardA.Value, row.ForwardN, row.ForwardE);
+        if (string.Equals(row.ExplicitRevRequirement, "REV_REQUIRED", StringComparison.Ordinal))
+        {
+            if (!row.RevA.HasValue || !row.RevN.HasValue || !row.RevE.HasValue)
             {
-                if (!row.RevA.HasValue || !row.RevN.HasValue || !row.RevE.HasValue)
-                {
-                    throw new InvalidOperationException(
-                        $"Reaction {row.SourceReactionIndex}, candidate {row.CandidateIndex} requires manual REV A, n and E values.");
-                }
-
-                builder.Append("    REV / ")
-                    .Append(FormatA(row.RevA.Value)).Append(' ')
-                    .Append(FormatParameter(row.RevN.Value)).Append(' ')
-                    .Append(FormatParameter(row.RevE.Value))
-                    .AppendLine(" /");
+                throw new InvalidOperationException(
+                    $"Reaction {row.SourceReactionIndex}, candidate {row.CandidateIndex} requires manual REV A, n and E values.");
             }
 
-            if (row.CopyLow && sourceReaction.LowPressureLimit.Count >= 3)
-            {
-                builder.Append("    LOW / ")
-                    .Append(FormatA(sourceReaction.LowPressureLimit[0] * row.ForwardRateMultiplier.Value)).Append(' ')
-                    .Append(FormatParameter(sourceReaction.LowPressureLimit[1])).Append(' ')
-                    .Append(FormatParameter(sourceReaction.LowPressureLimit[2]))
-                    .AppendLine(" /");
-            }
+            builder.Append("    REV / ")
+                .Append(FormatA(row.RevA.Value)).Append(' ')
+                .Append(FormatParameter(row.RevN.Value)).Append(' ')
+                .Append(FormatParameter(row.RevE.Value))
+                .AppendLine(" /");
+        }
 
-            if (row.CopyTroe && sourceReaction.TroeCentering.Count > 0)
-            {
-                builder.Append("    TROE / ")
-                    .Append(string.Join(' ', sourceReaction.TroeCentering.Select(FormatParameter)))
-                    .AppendLine(" /");
-            }
+        AppendAuxiliaryLines(
+            builder,
+            sourceReaction,
+            row.ForwardRateMultiplier.Value,
+            row.CopyLow,
+            row.CopyTroe,
+            row.CopyColliderEfficiencies,
+            row.IsDuplicate);
+    }
 
-            if (row.CopyColliderEfficiencies && sourceReaction.ColliderEfficiencies.Count > 0)
-            {
-                builder.Append("    ");
-                foreach (var efficiency in sourceReaction.ColliderEfficiencies)
-                {
-                    builder.Append(efficiency.Key)
-                        .Append(" / ")
-                        .Append(FormatParameter(efficiency.Value))
-                        .Append(" / ");
-                }
-                builder.AppendLine();
-            }
+    private static void AppendAuxiliaryLines(
+        StringBuilder builder,
+        ReactionInfo sourceReaction,
+        double lowPressureMultiplier,
+        bool copyLow,
+        bool copyTroe,
+        bool copyColliderEfficiencies,
+        bool isDuplicate)
+    {
+        if (copyLow && sourceReaction.LowPressureLimit.Count >= 3)
+        {
+            builder.Append("    LOW / ")
+                .Append(FormatA(sourceReaction.LowPressureLimit[0] * lowPressureMultiplier)).Append(' ')
+                .Append(FormatParameter(sourceReaction.LowPressureLimit[1])).Append(' ')
+                .Append(FormatParameter(sourceReaction.LowPressureLimit[2]))
+                .AppendLine(" /");
+        }
 
-            if (row.IsDuplicate)
-            {
-                builder.AppendLine("    DUPLICATE");
-            }
+        if (copyTroe && sourceReaction.TroeCentering.Count > 0)
+        {
+            builder.Append("    TROE / ")
+                .Append(string.Join(' ', sourceReaction.TroeCentering.Select(FormatParameter)))
+                .AppendLine(" /");
+        }
 
+        if (copyColliderEfficiencies && sourceReaction.ColliderEfficiencies.Count > 0)
+        {
+            builder.Append("    ");
+            foreach (var efficiency in sourceReaction.ColliderEfficiencies)
+            {
+                builder.Append(efficiency.Key)
+                    .Append(" / ")
+                    .Append(FormatParameter(efficiency.Value))
+                    .Append(" / ");
+            }
             builder.AppendLine();
         }
 
-        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(false));
+        if (isDuplicate)
+        {
+            builder.AppendLine("    DUPLICATE");
+        }
+
+        builder.AppendLine();
     }
 
     private static void WriteRateLine(StringBuilder builder, string equation, double a, double n, double e)

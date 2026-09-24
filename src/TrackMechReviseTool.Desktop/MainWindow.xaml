@@ -63,7 +63,9 @@
                   IsReadOnly="False" FrozenColumnCount="2" GridLinesVisibility="Horizontal"
                   HeadersVisibility="Column" RowHeaderWidth="0" AlternatingRowBackground="#F8FAFB"
                   BorderBrush="#B8C4CA" BorderThickness="1" SelectionUnit="FullRow"
-                  EnableRowVirtualization="True" EnableColumnVirtualization="True">
+                  EnableRowVirtualization="False" EnableColumnVirtualization="True"
+                  ScrollViewer.CanContentScroll="False"
+                  VirtualizingPanel.IsVirtualizingWhenGrouping="False">
             <DataGrid.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>
@@ -72,7 +74,7 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="GroupItem">
-                                        <Expander IsExpanded="True" Background="#E6EDF0">
+                                        <Expander IsExpanded="False" Background="#E6EDF0">
                                             <Expander.Header>
                                                 <DockPanel Margin="6,4">
                                                     <TextBlock Text="{Binding Name, StringFormat=反应 {0}}"
@@ -81,7 +83,9 @@
                                                                Margin="18,0,0,0" Foreground="#52636B" />
                                                 </DockPanel>
                                             </Expander.Header>
-                                            <ItemsPresenter />
+                                            <Border Background="White" BorderBrush="#CBD5DC" BorderThickness="0,1,0,0">
+                                                <ItemsPresenter />
+                                            </Border>
                                         </Expander>
                                     </ControlTemplate>
                                 </Setter.Value>

@@ -64,9 +64,51 @@
                   HeadersVisibility="Column" RowHeaderWidth="0" AlternatingRowBackground="#F8FAFB"
                   BorderBrush="#B8C4CA" BorderThickness="1" SelectionUnit="FullRow"
                   EnableRowVirtualization="True" EnableColumnVirtualization="True">
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="GroupItem">
+                            <Setter Property="Margin" Value="0,0,0,6" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GroupItem">
+                                        <Expander IsExpanded="True" Background="#E6EDF0">
+                                            <Expander.Header>
+                                                <DockPanel Margin="6,4">
+                                                    <TextBlock Text="{Binding Name, StringFormat=反应 {0}}"
+                                                               FontWeight="SemiBold" Foreground="#24343B" />
+                                                    <TextBlock Text="{Binding Items[0].SourceEquation}"
+                                                               Margin="18,0,0,0" Foreground="#52636B" />
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Padding" Value="3,1" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOriginal}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOriginal}" Value="True">
+                            <Setter Property="Background" Value="#EDF2F4" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="Foreground" Value="#24343B" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding PlanStatus}" Value="NeedsRevParameters">
                             <Setter Property="Background" Value="#FFF4D6" />
                         </DataTrigger>
@@ -77,12 +119,28 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="原反应" Binding="{Binding SourceReactionIndex}" IsReadOnly="True" Width="65" />
-                <DataGridTextColumn Header="原反应方程式" Binding="{Binding SourceEquation}" IsReadOnly="True" Width="190" />
-                <DataGridTextColumn Header="候选" Binding="{Binding CandidateIndex}" IsReadOnly="True" Width="55" />
+                <DataGridTextColumn Header="目录" Binding="{Binding SequenceLabel}" IsReadOnly="True" Width="65" />
+                <DataGridTextColumn Header="类型" Binding="{Binding RowKind}" IsReadOnly="True" Width="72" />
                 <DataGridTextColumn Header="标记数" Binding="{Binding MarkedAtomCount}" IsReadOnly="True" Width="55" />
-                <DataGridTextColumn Header="标记反应方程式" Binding="{Binding CandidateEquation}" IsReadOnly="True" Width="220" />
-                <DataGridCheckBoxColumn Header="采用" Binding="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="50" />
+                <DataGridTextColumn Header="反应方程式" Binding="{Binding DisplayEquation}" IsReadOnly="True" Width="250" />
+                <DataGridTemplateColumn Header="采用" Width="50">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOriginal}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="gf" Binding="{Binding Gf}" IsReadOnly="True" Width="40" />
                 <DataGridTextColumn Header="正向概率" Binding="{Binding ForwardProbability}" Width="75" />
                 <DataGridTextColumn Header="gr" Binding="{Binding Gr}" IsReadOnly="True" Width="40" />

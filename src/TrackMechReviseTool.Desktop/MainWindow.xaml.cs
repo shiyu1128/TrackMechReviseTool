@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using Microsoft.Win32;
 using TrackMechReviseTool.Core;
 
@@ -264,23 +265,40 @@ public partial class MainWindow : Window
 
     private IReadOnlyList<ReactionRewritePlanRow> CurrentCoreRows()
     {
-        return planRows.Select(row => row.ToCoreRow()).ToArray();
+        return planRows
+            .Where(row => !row.IsOriginal)
+            .Select(row => row.ToCoreRow())
+            .ToArray();
     }
 
     private void ReplaceRows(IEnumerable<ReactionRewritePlanRow> rows)
     {
-        planRows = new ObservableCollection<PlanRowViewModel>(rows.Select(row => new PlanRowViewModel(row)));
-        PlanGrid.ItemsSource = planRows;
+        var displayRows = rows
+            .GroupBy(row => row.SourceReactionIndex)
+            .OrderBy(group => group.Key)
+            .SelectMany(group =>
+            {
+                var orderedCandidates = group.OrderBy(row => row.CandidateIndex).ToArray();
+                return new[] { new PlanRowViewModel(orderedCandidates[0], isOriginal: true) }
+                    .Concat(orderedCandidates.Select(row => new PlanRowViewModel(row)));
+            });
+        planRows = new ObservableCollection<PlanRowViewModel>(displayRows);
+        var view = CollectionViewSource.GetDefaultView(planRows);
+        view.GroupDescriptions.Clear();
+        view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(PlanRowViewModel.SourceReactionIndex)));
+        PlanGrid.ItemsSource = view;
         RefreshSummary();
     }
 
     private void RefreshSummary()
     {
-        var selected = planRows.Count(row => row.Selected);
-        var ready = planRows.Count(row => row.PlanStatus == "Ready");
-        var needsRev = planRows.Count(row => row.PlanStatus == "NeedsRevParameters");
-        var invalid = planRows.Count(row => row.PlanStatus == "Invalid");
-        CountText.Text = $"候选 {planRows.Count}  |  已选 {selected}  |  可写出 {ready}  |  REV 待填 {needsRev}  |  错误 {invalid}";
+        var candidates = planRows.Where(row => !row.IsOriginal).ToArray();
+        var reactionCount = planRows.Count(row => row.IsOriginal);
+        var selected = candidates.Count(row => row.Selected);
+        var ready = candidates.Count(row => row.PlanStatus == "Ready");
+        var needsRev = candidates.Count(row => row.PlanStatus == "NeedsRevParameters");
+        var invalid = candidates.Count(row => row.PlanStatus == "Invalid");
+        CountText.Text = $"原反应 {reactionCount}  |  标记候选 {candidates.Length}  |  已选 {selected}  |  可写出 {ready}  |  REV 待填 {needsRev}  |  错误 {invalid}";
 
         RevNotice.Visibility = needsRev > 0 ? Visibility.Visible : Visibility.Collapsed;
         RevNoticeText.Text = needsRev > 0

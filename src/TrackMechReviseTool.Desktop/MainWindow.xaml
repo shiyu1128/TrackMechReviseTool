@@ -146,17 +146,12 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding ForwardProbabilityOptions}"
-                                      SelectedItem="{Binding ForwardProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      Text="{Binding ForwardProbability, Mode=TwoWay, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"
+                                      DisplayMemberPath="Display" SelectedValuePath="Value"
+                                      SelectedValue="{Binding ForwardProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Text="{Binding ForwardProbabilityText, Mode=TwoWay, UpdateSourceTrigger=LostFocus, ValidatesOnExceptions=True}"
                                       IsEditable="True" IsTextSearchEnabled="False"
                                       ToolTip="{Binding ForwardProbabilityHint}"
-                                      Padding="4,1" MinHeight="24">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding StringFormat={}{0:0.############}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                      Padding="4,1" MinHeight="24" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -165,18 +160,13 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding ReverseProbabilityOptions}"
-                                      SelectedItem="{Binding ReverseProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      Text="{Binding ReverseProbability, Mode=TwoWay, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"
+                                      DisplayMemberPath="Display" SelectedValuePath="Value"
+                                      SelectedValue="{Binding ReverseProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Text="{Binding ReverseProbabilityText, Mode=TwoWay, UpdateSourceTrigger=LostFocus, ValidatesOnExceptions=True}"
                                       IsEnabled="{Binding CanEditReverseProbability}"
                                       IsEditable="True" IsTextSearchEnabled="False"
                                       ToolTip="{Binding ReverseProbabilityHint}"
-                                      Padding="4,1" MinHeight="24">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding StringFormat={}{0:0.############}}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                      Padding="4,1" MinHeight="24" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

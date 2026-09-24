@@ -308,21 +308,21 @@ public partial class MainWindow : Window
         RefreshSummary();
     }
 
-    private static IReadOnlyList<double?> BuildProbabilityOptions(
+    private static IReadOnlyList<ProbabilityOption> BuildProbabilityOptions(
         IEnumerable<int> multiplicities,
         IEnumerable<double?> currentProbabilities)
     {
         var weights = multiplicities.ToArray();
-        var values = new HashSet<double>();
+        var values = new Dictionary<double, string>();
         if (weights.Length == 1)
         {
-            values.Add(1.0);
+            AddProbabilityOption(values, 1, 1);
         }
         else if (weights.Length > 1)
         {
             for (var numerator = 0; numerator <= weights.Length; numerator++)
             {
-                values.Add(RoundProbability(numerator / (double)weights.Length));
+                AddProbabilityOption(values, numerator, weights.Length);
             }
 
             var totalWeight = weights.Sum();
@@ -330,19 +330,28 @@ public partial class MainWindow : Window
             {
                 foreach (var weight in weights)
                 {
-                    values.Add(RoundProbability(weight / (double)totalWeight));
+                    AddProbabilityOption(values, weight, totalWeight);
                 }
             }
         }
 
         foreach (var probability in currentProbabilities.Where(value => value.HasValue))
         {
-            values.Add(probability!.Value);
+            var numericValue = probability!.Value;
+            values.TryAdd(RoundProbability(numericValue), ProbabilityFraction.Format(numericValue));
         }
 
-        return new double?[] { null }
-            .Concat(values.OrderBy(value => value).Select(value => (double?)value))
+        return new[] { new ProbabilityOption(null, string.Empty) }
+            .Concat(values
+                .OrderBy(item => item.Key)
+                .Select(item => new ProbabilityOption(item.Key, item.Value)))
             .ToArray();
+    }
+
+    private static void AddProbabilityOption(IDictionary<double, string> values, long numerator, long denominator)
+    {
+        var value = RoundProbability(numerator / (double)denominator);
+        values.TryAdd(value, ProbabilityFraction.Format(numerator, denominator));
     }
 
     private static double RoundProbability(double value)

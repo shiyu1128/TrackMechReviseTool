@@ -142,9 +142,44 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="gf" Binding="{Binding Gf}" IsReadOnly="True" Width="40" />
-                <DataGridTextColumn Header="正向概率" Binding="{Binding ForwardProbability}" Width="75" />
+                <DataGridTemplateColumn Header="正向概率" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding ForwardProbabilityOptions}"
+                                      SelectedItem="{Binding ForwardProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Text="{Binding ForwardProbability, Mode=TwoWay, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"
+                                      IsEditable="True" IsTextSearchEnabled="False"
+                                      ToolTip="{Binding ForwardProbabilityHint}"
+                                      Padding="4,1" MinHeight="24">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding StringFormat={}{0:0.############}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="gr" Binding="{Binding Gr}" IsReadOnly="True" Width="40" />
-                <DataGridTextColumn Header="逆向概率" Binding="{Binding ReverseProbability}" Width="75" />
+                <DataGridTemplateColumn Header="逆向概率" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding ReverseProbabilityOptions}"
+                                      SelectedItem="{Binding ReverseProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Text="{Binding ReverseProbability, Mode=TwoWay, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"
+                                      IsEnabled="{Binding CanEditReverseProbability}"
+                                      IsEditable="True" IsTextSearchEnabled="False"
+                                      ToolTip="{Binding ReverseProbabilityHint}"
+                                      Padding="4,1" MinHeight="24">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding StringFormat={}{0:0.############}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="REV 判定" Binding="{Binding ExplicitRevRequirement}" IsReadOnly="True" Width="125" />
                 <DataGridTextColumn Header="REV A" Binding="{Binding RevA}" Width="105" />
                 <DataGridTextColumn Header="REV n" Binding="{Binding RevN}" Width="75" />

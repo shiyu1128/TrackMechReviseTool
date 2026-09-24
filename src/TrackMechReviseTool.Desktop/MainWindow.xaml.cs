@@ -273,14 +273,32 @@ public partial class MainWindow : Window
 
     private void ReplaceRows(IEnumerable<ReactionRewritePlanRow> rows)
     {
-        var displayRows = rows
+        var sourceRows = rows.ToArray();
+        var forwardOptions = sourceRows
+            .GroupBy(row => (row.SourceReactionIndex, row.ForwardBranchGroup))
+            .ToDictionary(
+                group => group.Key,
+                group => BuildProbabilityOptions(
+                    group.Select(row => row.ForwardAssignmentMultiplicity),
+                    group.Select(row => row.ForwardProbability)));
+        var reverseOptions = sourceRows
+            .GroupBy(row => (row.SourceReactionIndex, row.ReverseBranchGroup))
+            .ToDictionary(
+                group => group.Key,
+                group => BuildProbabilityOptions(
+                    group.Select(row => row.ReverseAssignmentMultiplicity),
+                    group.Select(row => row.ReverseProbability)));
+        var displayRows = sourceRows
             .GroupBy(row => row.SourceReactionIndex)
             .OrderBy(group => group.Key)
             .SelectMany(group =>
             {
                 var orderedCandidates = group.OrderBy(row => row.CandidateIndex).ToArray();
                 return new[] { new PlanRowViewModel(orderedCandidates[0], isOriginal: true) }
-                    .Concat(orderedCandidates.Select(row => new PlanRowViewModel(row)));
+                    .Concat(orderedCandidates.Select(row => new PlanRowViewModel(
+                        row,
+                        forwardProbabilityOptions: forwardOptions[(row.SourceReactionIndex, row.ForwardBranchGroup)],
+                        reverseProbabilityOptions: reverseOptions[(row.SourceReactionIndex, row.ReverseBranchGroup)])));
             });
         planRows = new ObservableCollection<PlanRowViewModel>(displayRows);
         var view = CollectionViewSource.GetDefaultView(planRows);
@@ -288,6 +306,48 @@ public partial class MainWindow : Window
         view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(PlanRowViewModel.SourceReactionIndex)));
         PlanGrid.ItemsSource = view;
         RefreshSummary();
+    }
+
+    private static IReadOnlyList<double?> BuildProbabilityOptions(
+        IEnumerable<int> multiplicities,
+        IEnumerable<double?> currentProbabilities)
+    {
+        var weights = multiplicities.ToArray();
+        var values = new HashSet<double>();
+        if (weights.Length == 1)
+        {
+            values.Add(1.0);
+        }
+        else if (weights.Length > 1)
+        {
+            for (var numerator = 0; numerator <= weights.Length; numerator++)
+            {
+                values.Add(RoundProbability(numerator / (double)weights.Length));
+            }
+
+            var totalWeight = weights.Sum();
+            if (totalWeight > 0)
+            {
+                foreach (var weight in weights)
+                {
+                    values.Add(RoundProbability(weight / (double)totalWeight));
+                }
+            }
+        }
+
+        foreach (var probability in currentProbabilities.Where(value => value.HasValue))
+        {
+            values.Add(probability!.Value);
+        }
+
+        return new double?[] { null }
+            .Concat(values.OrderBy(value => value).Select(value => (double?)value))
+            .ToArray();
+    }
+
+    private static double RoundProbability(double value)
+    {
+        return Math.Round(value, 12, MidpointRounding.AwayFromZero);
     }
 
     private void RefreshSummary()

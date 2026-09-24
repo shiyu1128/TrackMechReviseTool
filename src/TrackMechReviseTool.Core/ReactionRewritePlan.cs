@@ -46,27 +46,42 @@ public sealed record ReactionRewritePlanRow(
             : string.Empty;
 }
 
+public sealed record ReactionRewritePlanProgress(
+    int ProcessedReactions,
+    int TotalReactions,
+    int CandidateRows);
+
 public sealed class ReactionRewritePlanService
 {
     private const double MultiplierTolerance = 1e-12;
 
-    public IReadOnlyList<ReactionRewritePlanRow> BuildRows(OutMechanism mechanism, string elementSymbol)
+    public IReadOnlyList<ReactionRewritePlanRow> BuildRows(
+        OutMechanism mechanism,
+        string elementSymbol,
+        IProgress<ReactionRewritePlanProgress>? progress = null,
+        CancellationToken cancellationToken = default)
     {
         var ruleMap = new TraceRuleCatalog()
-            .GetRules(elementSymbol)
+            .GetRules(mechanism, elementSymbol)
             .ToDictionary(item => item.SourceSpecies, StringComparer.OrdinalIgnoreCase);
         var generator = new LabeledReactionTypeGenerator();
         var rows = new List<ReactionRewritePlanRow>();
+        var processedReactions = 0;
 
         foreach (var reaction in mechanism.Reactions)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var expansion = generator.Generate(mechanism, reaction, elementSymbol, ruleMap);
-            if (expansion.TotalElementAtomCount == 0 || expansion.Candidates.Count == 0)
+            if (expansion.TotalElementAtomCount > 0 && expansion.Candidates.Count > 0)
             {
-                continue;
+                rows.AddRange(BuildReactionRows(reaction, expansion));
             }
 
-            rows.AddRange(BuildReactionRows(reaction, expansion));
+            processedReactions++;
+            progress?.Report(new ReactionRewritePlanProgress(
+                processedReactions,
+                mechanism.Reactions.Count,
+                rows.Count));
         }
 
         return rows;

@@ -32,7 +32,7 @@ public sealed class ReactionReviewService
     public IReadOnlyList<ReactionReviewRow> BuildReviewRows(OutMechanism mechanism, string elementSymbol)
     {
         var ruleCatalog = new TraceRuleCatalog();
-        var rules = ruleCatalog.GetRules(elementSymbol);
+        var rules = ruleCatalog.GetRules(mechanism, elementSymbol);
         var ruleMap = rules.ToDictionary(item => item.SourceSpecies, StringComparer.OrdinalIgnoreCase);
         var assessmentService = new BranchProbabilityAssessmentService();
         var reactionTypeGenerator = new LabeledReactionTypeGenerator();

@@ -61,7 +61,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void GeneratePlan_Click(object sender, RoutedEventArgs e)
+    private async void GeneratePlan_Click(object sender, RoutedEventArgs e)
     {
         if (mechanism is null || ElementBox.SelectedItem is not string element)
         {
@@ -69,15 +69,69 @@ public partial class MainWindow : Window
             return;
         }
 
+        var sourceMechanism = mechanism;
+
+        GeneratePlanButton.IsEnabled = false;
+        GenerationPanel.Visibility = Visibility.Visible;
+        GenerationProgressBar.Minimum = 0;
+        GenerationProgressBar.Maximum = Math.Max(1, sourceMechanism.Reactions.Count);
+        GenerationProgressBar.Value = 0;
+        GenerationProgressText.Text = $"正在为元素 {element} 计算改写计划...";
+        await System.Windows.Threading.Dispatcher.Yield(
+            System.Windows.Threading.DispatcherPriority.Render);
+
         try
         {
-            var rows = new ReactionRewritePlanService().BuildRows(mechanism, element);
+            var progress = new Progress<ReactionRewritePlanProgress>(update =>
+            {
+                GenerationProgressBar.Maximum = Math.Max(1, update.TotalReactions);
+                GenerationProgressBar.Value = update.ProcessedReactions;
+                GenerationProgressText.Text =
+                    $"已分析 {update.ProcessedReactions}/{update.TotalReactions} 条反应，生成 {update.CandidateRows} 个候选";
+            });
+            var rows = await Task.Run(() =>
+                new ReactionRewritePlanService().BuildRows(sourceMechanism, element, progress));
+            if (rows.Count == 0)
+            {
+                ReplaceRows(rows);
+                SetStatus($"元素 {element} 未生成可用的标记反应，请检查 .out 中的组分名称和元素组成。", isError: true);
+                return;
+            }
+
             ReplaceRows(rows);
-            SetStatus($"已为元素 {element} 生成审核计划。", isError: false);
+            GenerationProgressBar.Value = GenerationProgressBar.Maximum;
+            GenerationProgressText.Text = $"计算完成，共生成 {rows.Count} 个候选反应。";
+
+            var dialog = new SaveFileDialog
+            {
+                Title = "命名并保存新生成的审核计划",
+                Filter = "Rewrite plan (*.csv)|*.csv",
+                FileName = $"rewrite_plan_{element}.csv",
+                AddExtension = true,
+                DefaultExt = ".csv"
+            };
+            if (dialog.ShowDialog(this) == true)
+            {
+                CsvWriter.WriteReactionRewritePlan(dialog.FileName, rows);
+                SetStatus(
+                    $"元素 {element} 的计划已重新计算并保存，共 {rows.Count} 个候选：{dialog.FileName}",
+                    isError: false);
+            }
+            else
+            {
+                SetStatus(
+                    $"元素 {element} 的计划已重新计算，共 {rows.Count} 个候选；当前尚未保存。",
+                    isError: false);
+            }
         }
-        catch (Exception exception) when (exception is InvalidOperationException or FormatException)
+        catch (Exception exception) when (exception is InvalidOperationException or FormatException or IOException or UnauthorizedAccessException)
         {
             SetStatus($"生成计划失败：{exception.Message}", isError: true);
+        }
+        finally
+        {
+            GeneratePlanButton.IsEnabled = true;
+            GenerationPanel.Visibility = Visibility.Collapsed;
         }
     }
 

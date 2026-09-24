@@ -31,7 +31,7 @@ public sealed class MarkedThermoWriter
         }
 
         var sourceByMarkedSpecies = new TraceRuleCatalog()
-            .GetRules(elementSymbol)
+            .GetRules(mechanism, elementSymbol)
             .SelectMany(rule => rule.States.Select(state => new
             {
                 MarkedSpecies = state.Name,
